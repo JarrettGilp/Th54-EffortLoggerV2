@@ -1,3 +1,5 @@
+// EffortLogger Team Th54
+
 package application;
 	
 import javafx.application.Application;
