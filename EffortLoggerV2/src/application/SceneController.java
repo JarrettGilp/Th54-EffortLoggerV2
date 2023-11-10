@@ -377,11 +377,8 @@ public class SceneController {
 			 
 			  	} // IF CODE WAS NOT A CORRECT CODE
 				else {
-					// EMPTY BUFFER ARRAY
-					buffer[0] = "0";
-					buffer[1] = "0";
-					System.out.println("\nThe supervisor code entered does not exist!");	
 					
+					System.out.println("\nThe supervisor code entered does not exist!");	
 					break;
 				}
 			}		
