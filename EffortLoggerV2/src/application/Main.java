@@ -25,7 +25,7 @@ public class Main extends Application {
 			// SET ROOT PAGE AND CREATE SCENE
 			Parent root = FXMLLoader.load(getClass().getResource("/EffortLoggerLogin.fxml"));
 			Scene homeScene = new Scene(root);
-						
+			
 			// ICON
 			//Image icon = new Image("<something>.png");
 			//stage.getIcons().add(icon);

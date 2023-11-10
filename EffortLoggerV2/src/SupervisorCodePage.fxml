@@ -16,6 +16,6 @@
       <Label layoutX="127.0" layoutY="191.0" text="Enter Supervisor Code:" />
       <TextField fx:id="supervisorCodeTextField" layoutX="273.0" layoutY="187.0" />
       <Button layoutX="29.0" layoutY="343.0" mnemonicParsing="false" onAction="#switchToRegisterPage" text="Cancel" />
-      <Button layoutX="270.0" layoutY="242.0" mnemonicParsing="false" onAction="#registerSupervisor" text="Register" />
+      <Button layoutX="270.0" layoutY="242.0" mnemonicParsing="false" onAction="#supervisorLogin" text="Register" />
    </children>
 </AnchorPane>
