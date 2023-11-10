@@ -3,10 +3,19 @@
 // ASU ID: 1216797582
 // --------------------------
 
+/* -------USAGE NOTES--------
+ * 
+ *  USER NEEDS TO REGISTER A LOGIN AND PASSWORD BEFORE BEING ABLE TO LOGIN TO AN ACCOUNT
+ *  -- UNLESS THEY KNOW THE USERNAME AND PASSWORD USED FOR TESTING FOR EITHER REGULAR USERS OR SUPERVISORS
+ * 
+ */
+ 
+
 package application;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,15 +34,16 @@ public class SceneController {
 	private Stage stage;
 	private Scene scene;
 	private Parent root;
+	private static String supervisorUsername;
+	private static Boolean loggedIn = false;
 	
-	private static ArrayList<String> userList = new ArrayList<String>(2);
-	private static ArrayList<String> supervisorList = new ArrayList<String>(2);
-	
-	// FXML FIELDS
+	// LOGIN VARIABLES
 	@FXML
 	TextField usernameLoginTextField;
 	@FXML
 	TextField passwordLoginTextField;
+	
+	// REGISTRATION VARIABLES AND PAGE ELEMENTS
 	@FXML
 	TextField usernameRegisterTextField;
 	@FXML
@@ -43,41 +53,75 @@ public class SceneController {
 	@FXML
 	Label usernameLabel;
 	@FXML
+	Label supervisorLabel;
+	@FXML
 	private Button logoutButton;
 	@FXML
 	private AnchorPane userPagePane;
 	
-	// TESTING VARIABLES
-	private String testUsername = "testuser";
-	private String testPassword = "testpass";
-	private String superTestUsername = "supertest";
-	private String superTestPassword = "superpass";
-	private String supervisorTestCode = "1234";
+	// TEST VARIABLES
+	private static String testUsername = "testuser";
+	private static String testPassword = "testpass";
+	private static String superTestUsername = "superuser";
+	private static String superTestPassword = "superpass";
+	private static String supervisorTestCode = "1234";
 	
-	
+	// DATA STRUCTURES
+		private static ArrayList<String> userList = new ArrayList<String>(100) {{
+			add(testUsername);
+			add(testPassword);
+		}};
+		private static ArrayList<String> supervisorList = new ArrayList<String>(100) {{
+			add(superTestUsername);
+			add(superTestPassword);
+		}};
+		private static ArrayList<String> superCodes = new ArrayList<String>(20) {{ 
+			add(supervisorTestCode);
+		}};
+		private static String buffer[] = new String[] {"0", "0"};
+		
 	// WHEN LOGIN BUTTON IS CLICKED - CHECK IF USERNAME AND PASSWORD COMBO EXISTS
 	public void authentication(ActionEvent event) throws IOException {
 		
 		String username = usernameLoginTextField.getText();
 		String password = passwordLoginTextField.getText();
 		
-		// CHECK CREDENTIALS
-		if ( (testUsername.equals(username) && (testPassword.equals(password))) || (username.equals(userList.get(0)) && password.equals(userList.get(1))) )
-		{
-			userLogin(event);
-		}
-		else if ( (superTestUsername.equals(username) && (superTestPassword.equals(password))) || (username.equals(supervisorList.get(0)) && password.equals(supervisorList.get(1))) )
-		{
-			supervisorLogin(event);
-		}
-		else
-		{
-			System.out.println("Invalid username or password.");
+		// CHECK IF USER NAME AND PASSWORD CREDENTIALS ARE WITHIN USERLIST OR SUPERVISORLIST
+		for( int i = 0; i <= userList.size() - 2; i+=2) {
+			
+			System.out.println("\nTEST:\n");
+			System.out.println("UserList size is: ");
+			System.out.println(userList.size());
+			System.out.println(userList.get(0));
+			System.out.println(userList.get(1));
+			
+			if ( (username.equals(userList.get(i)) && password.equals(userList.get(i + 1))) )
+			{
+				System.out.println("User info was seen.");
+				loggedIn = true;
+				userLogin(event);
+				
+			}
 		}
 		
+		for( int j = 0; j <= supervisorList.size() - 2; j+=2) {
+			
+			if ( (username.equals(supervisorList.get(j)) && password.equals(supervisorList.get(j + 1))) )
+			{
+				System.out.println("User info was seen.");
+				loggedIn = true;
+				setSuperUsername(username);
+				supervisorLogin(event);
+			}
+		}
+		
+		if ( loggedIn == false ){
+			System.out.println("\nInvalid username or password.");
+		}
+			
 	}
 	
-	// Goes to Login Page
+	// GOES TO LOGIN PAGE (HOME PAGE)
 	public void switchToHomePage(ActionEvent event) throws IOException {
 		
 		Parent root = FXMLLoader.load(getClass().getResource("/EffortLoggerLogin.fxml"));
@@ -88,7 +132,7 @@ public class SceneController {
 		
 	}
 	
-	// Goes to the User's Page
+	// GOES TO USER PAGE
 	public void switchToUserPage(ActionEvent event) throws IOException {
 				
 		Parent root = FXMLLoader.load(getClass().getResource("/UserPage.fxml"));
@@ -100,9 +144,13 @@ public class SceneController {
 		
 	}
 	
+	// GOES TO SUPERVISOR PAGE
 	public void switchToSupervisorPage(ActionEvent event) throws IOException {
 		
-		Parent root = FXMLLoader.load(getClass().getResource("/SupervisorPage.fxml"));
+		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorPage.fxml"));
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -111,7 +159,7 @@ public class SceneController {
 		
 	}
 	
-	// Goes to the Register Page
+	// GOES TO REGISTRATION PAGE
 	public void switchToRegisterPage(ActionEvent event) throws IOException {
 					
 			Parent root = FXMLLoader.load(getClass().getResource("/RegisterPage.fxml"));
@@ -123,9 +171,12 @@ public class SceneController {
 			
 	}
 	
+	// GOES TO SUPERVISOR CODE PROMPT PAGE
 	public void switchToSupervisorCodePage(ActionEvent event) throws IOException {
 		
-		Parent root = FXMLLoader.load(getClass().getResource("/SupervisorCodePage.fxml"));
+		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorCodePage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorCodePage.fxml"));
+		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -134,91 +185,122 @@ public class SceneController {
 		
 	}
 	
-	// Displays name after logging in at top of screen
+	// DISPLAYS NAME ON USER PAGE AFTER USER LOGS IN
 	public void displayName(String username) {
 		
 		usernameLabel.setText("Welcome User: " + username);
 		
 	}
 	
+	// DISPLAYS NAME ON SUPERVISOR PAGE AFTER SUPERVISOR LOGS IN
 	public void displaySupervisorName(String username) {
 		
-		usernameLabel.setText("Welcome Supervisor: " + username);
+		supervisorLabel.setText("Welcome Supervisor: " + username);
 		
 	}
 	
-	public void listAdd(ArrayList<String> list, String username, String password)
-	{
-		list.add(username);
-		list.add(password);
-		
-		System.out.println("\nList items: ");
+	// PRINTS ELEMENTS OF A SPECIFIED LIST
+	public void printList(ArrayList<String> list) {
+		System.out.println("List items: ");
 		for(int i = 0; i < list.size(); i++)
 		{
 			System.out.println(list.get(i));
 		}
 		System.out.println();
-		
 	}
 	
+	// PRINTS ELEMENTS OF A SPECIFIED ARRAY
+	public void printArray(String[] arr) {
+		System.out.println("Array Items: ");
+		for(int i = 0; i < arr.length; i++) {
+			System.out.println(arr[i]);
+		}
+	}
+
+	// ADD ELEMENTS TO A SPECIFIED LIST
+	public void listAdd(ArrayList<String> list, String username, String password)
+	{
+		list.add(username);
+		list.add(password);
+	}
+	
+	// SETTER FOR SUPERVISOR USERNAME - USED FOR LABEL
+	public void setSuperUsername(String username) {
+		this.supervisorUsername = username;
+	}
+	
+	// GETTER FOR SUPERVISOR USERNAME
+	public String getSuperUsername() {
+		return supervisorUsername;
+	}
+	
+	// OCCURS AFTER CLICKING REGISTER BUTTON ON LOGIN PAGE
 	public void registerButton(ActionEvent event) throws IOException {
 		
 		switchToRegisterPage(event);
-		System.out.println("You have switched to the register page!");
+		System.out.println("\nYou have switched to the register page!");
 		
 	}
 	
+	// REGISTERS LOGIN INFORMATION FOR A USER
 	public void registerUserLogin(ActionEvent event) throws IOException {
 	
+		// ADD USERNAME AND PASSWORD TO ARRAYLIST THAT CONTAINS LOGIN INFO OF USERS
+		String username = usernameRegisterTextField.getText();
+		String password = passwordRegisterTextField.getText();
+		
+		// PRINTS OUT FOR TESTING
+		listAdd(userList, username, password);
+		System.out.print("\nUserList - ");
+		printList(userList);
+		
+		System.out.println("\nYou have successfully registered your login information!\n");
+		
+		// LOGS IN USER AFTER REGISTRATION
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		root = loader.load();
+		
+		SceneController sceneController = loader.getController();
+		sceneController.displayName(username);
+		
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+		
+	}
+	
+	// OCCURS AFTER CLICKING REGISTER AS SUPERVISOR BUTTON
+	public void registerSupervisorLogin(ActionEvent event) throws IOException {
 		//ADD USERNAME AND PASSWORD TO ARRAYLIST THAT CONTAINS LOGIN INFO OF USERS
 		String username = usernameRegisterTextField.getText();
 		String password = passwordRegisterTextField.getText();
 		
-		listAdd(userList, username, password);
-		
-		System.out.println("You have successfully registered your login information!\n");
-		
-		// Login after Registering
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		// PRINTING OUT FOR TESTING
+		System.out.println("\nLogin info has been added to the buffer!\n");
+		buffer[0] = username;
+		buffer[1] = password;
+		System.out.print("\nBuffer - ");
+		printArray(buffer);
+				
+		//switchToSupervisorCodePage(event);
+		setSuperUsername(username);
+				
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorCodePage.fxml"));
 		root = loader.load();
-		
-		SceneController sceneController = loader.getController();
-		sceneController.displayName(username);
-		
+				
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
 		
+		System.out.println("\nYou have switched to supervisor code page.");
 	}
 	
-	public void registerSupervisor(ActionEvent event) throws IOException {
-		
-		//ADD USERNAME AND PASSWORD TO ARRAYLIST THAT CONTAINS LOGIN INFO OF USERS
-				String username = usernameRegisterTextField.getText();
-				String password = passwordRegisterTextField.getText();
-				
-				listAdd(supervisorList, username, password);
-				
-				System.out.println("You have successfully registered your supervisor login information!\n");
-				
-				// Login after Registering
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
-				root = loader.load();
-				
-				SceneController sceneController = loader.getController();
-				sceneController.displaySupervisorName(username);
-				
-				stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-				scene = new Scene(root);
-				stage.setScene(scene);
-				stage.show();
-		
-	}
-	
-	// Logs user in
+	// LOGS USER IN
 	public void userLogin(ActionEvent event) throws IOException {
 		
+		// CAPTURES USERNAME ENTRY FIELD FOR DISPLAYING IN USER PAGE
 		String username = usernameLoginTextField.getText();
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
@@ -232,45 +314,108 @@ public class SceneController {
 		stage.setScene(scene);
 		stage.show();
 		
-		System.out.println("You have successfully logged in!");
+		System.out.println("\nYou have successfully logged in!");
 		
 	}
 	
+	// LOGS SUPERVISOR IN
 	public void supervisorLogin(ActionEvent event) throws IOException {
 		
-		String username = usernameLoginTextField.getText();
+		String user = getSuperUsername();
 		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
-		root = loader.load();
-		
-		SceneController sceneController = loader.getController();
-		sceneController.displaySupervisorName(username);
-		
-		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-		scene = new Scene(root);
-		stage.setScene(scene);
-		stage.show();
-		
-		System.out.println("You have successfully logged in as supervisor!");		
-		
+		// IF SUPERVISOR IS LOGGING IN REGULARLY
+		if ( this.supervisorCodeTextField == null ) {
+			
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+			root = loader.load();
+			System.out.println("\nYou have successfully logged in as supervisor!");	
+			
+			SceneController sceneController = loader.getController();
+			sceneController.displaySupervisorName(user);
+			
+			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+			scene = new Scene(root);
+			stage.setScene(scene);
+			stage.show();
+		}
+		// LOGS SUPERVISOR IN IF THEY PROVIDE A CORRECT SUPERVISOR CODE IN REGISTRATION
+		else {
+			// CAPTURES CODE ENTERED BY USER
+			String code = supervisorCodeTextField.getText();
+			
+			// IF THE SUPERVISOR CODE IS A CORRECT ONE, LOG SUPERVISOR IN AFTER REGISTERING
+			for (int i = 0; i < superCodes.size(); i++) {
+				
+			  	if( code.equals(superCodes.get(i)) ) {
+			  	// ADDS SUPERVISOR LOGIN INFO TO SUPERVISOR LIST
+					listAdd(supervisorList, buffer[0], buffer[1]);
+					
+					// PRINTING FOR TESTING
+					System.out.print("\nSupervisorList - ");
+					printList(supervisorList);
+					
+					// EMPTY BUFFER ARRAY
+					buffer[0] = "0";
+					buffer[1] = "0";
+					
+					// PRINTING FOR TESTING
+					System.out.print("\nBuffer - ");
+					printArray(buffer);
+					
+					// LOGGED IN TO SUPERVISOR PAGE
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+					root = loader.load();
+					System.out.println("\nYou have successfully logged in as supervisor!");
+					
+					SceneController sceneController = loader.getController();
+					sceneController.displaySupervisorName(user);
+					
+					stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+					scene = new Scene(root);
+					stage.setScene(scene);
+					stage.show();	
+			 
+			  	} // IF CODE WAS NOT A CORRECT CODE
+				else {
+					// EMPTY BUFFER ARRAY
+					buffer[0] = "0";
+					buffer[1] = "0";
+					System.out.println("\nThe supervisor code entered does not exist!");	
+					
+					break;
+				}
+			}		
+		} 	
 	}
 	
-	// Logs user out / Switches to home page
+	// LOGS USER OUT
 	public void logout(ActionEvent event) throws IOException {
 		
+		// LOGS OUT USER TO LOGIN PAGE
 		switchToHomePage(event);
-		System.out.println("You have successfully logged out!");
+		System.out.println("\nYou have successfully logged out!\n");
+		
+		// CONTROL VARIABLES SET BACK TO DEFAULT STATES
+		setSuperUsername("");
+		loggedIn = false;
+		
+		// PRINTING OUT FOR TESTING
+		System.out.println("UserList - ");
+		printList(userList);
+		System.out.println("SupervisorList - ");
+		printList(supervisorList);
+		System.out.println("Buffer - ");
+		printArray(buffer);
 		
 	}
 	
-	// Quits the program
+	// QUITS THE PROGRAM
 	public void exit(ActionEvent event) {
 		
 		stage = (Stage) userPagePane.getScene().getWindow();
-		System.out.println("You have successfully exited the program!");
+		System.out.println("\nYou have successfully exited the program!");
 		stage.close();
 		
 	}
-	
 	
 }
