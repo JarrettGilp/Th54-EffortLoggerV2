@@ -185,6 +185,28 @@ public class SceneController {
 		
 	}
 	
+	// GOES TO USER STORIES PAGE
+	public void switchToUserStoriesPage(ActionEvent event) throws IOException {
+		
+		Parent root = FXMLLoader.load(getClass().getResource("/UserStoriesPage.fxml"));
+		
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+	}
+	
+	// GOES TO PLANNING POKER PAGE
+	public void switchToPlanningPokerPage(ActionEvent event) throws IOException {
+		
+		Parent root = FXMLLoader.load(getClass().getResource("/PlanningPokerPage.fxml"));
+		
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+	}
+	
 	// DISPLAYS NAME ON USER PAGE AFTER USER LOGS IN
 	public void displayName(String username) {
 		
@@ -283,7 +305,6 @@ public class SceneController {
 		System.out.print("\nBuffer - ");
 		printArray(buffer);
 				
-		//switchToSupervisorCodePage(event);
 		setSuperUsername(username);
 				
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorCodePage.fxml"));

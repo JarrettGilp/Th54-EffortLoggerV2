@@ -17,5 +17,7 @@
             <Font size="14.0" />
          </font>
       </Button>
+      <Button fx:id="userStoriesButton" layoutX="193.0" layoutY="141.0" mnemonicParsing="false" onAction="#switchToUserStoriesPage" prefHeight="42.0" prefWidth="213.0" text="User Stories" />
+      <Button fx:id="planningPokerButton" layoutX="192.0" layoutY="206.0" mnemonicParsing="false" onAction="#switchToPlanningPokerPage" prefHeight="42.0" prefWidth="214.0" text="Planning Poker" />
    </children>
 </AnchorPane>
