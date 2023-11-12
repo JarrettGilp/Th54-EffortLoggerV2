@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -15,21 +16,24 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <ListView layoutX="362.0" layoutY="116.0" prefHeight="173.0" prefWidth="200.0" />
+      <ListView fx:id="userStoryDataListView" layoutX="362.0" layoutY="116.0" prefHeight="90.0" prefWidth="200.0" />
       <Label layoutX="362.0" layoutY="94.0" text="User Story Data" />
-      <ChoiceBox layoutX="29.0" layoutY="116.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="userStoryChoiceBox" layoutX="29.0" layoutY="116.0" prefWidth="150.0" />
       <Label layoutX="29.0" layoutY="94.0" text="User Story" />
-      <Button layoutX="154.0" layoutY="307.0" mnemonicParsing="false" text="0" />
-      <Button layoutX="220.0" layoutY="307.0" mnemonicParsing="false" text="1" />
-      <Button layoutX="288.0" layoutY="307.0" mnemonicParsing="false" text="2" />
-      <Button layoutX="362.0" layoutY="307.0" mnemonicParsing="false" text="3" />
-      <Button layoutX="433.0" layoutY="307.0" mnemonicParsing="false" text="4" />
+      <Button fx:id="score0" layoutX="154.0" layoutY="307.0" mnemonicParsing="false" onAction="#change0" text="0" />
+      <Button fx:id="score1" layoutX="220.0" layoutY="307.0" mnemonicParsing="false" onAction="#change1" text="1" />
+      <Button fx:id="score2" layoutX="288.0" layoutY="307.0" mnemonicParsing="false" onAction="#change2" text="2" />
+      <Button fx:id="score3" layoutX="362.0" layoutY="307.0" mnemonicParsing="false" onAction="#change3" text="3" />
+      <Button fx:id="score4" layoutX="433.0" layoutY="307.0" mnemonicParsing="false" onAction="#change4" text="4" />
       <Button layoutX="29.0" layoutY="348.0" mnemonicParsing="false" onAction="#switchToUserPage" prefHeight="26.0" prefWidth="91.0" text="Exit" />
       <Label layoutX="29.0" layoutY="155.0" text="User Story Item" />
-      <ChoiceBox layoutX="29.0" layoutY="179.0" prefHeight="26.0" prefWidth="150.0" />
-      <Button layoutX="197.0" layoutY="179.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="102.0" text="New Story Item" />
-      <TextArea layoutX="29.0" layoutY="238.0" prefHeight="50.0" prefWidth="273.0" />
+      <ChoiceBox fx:id="userStoryItemChoiceBox" layoutX="29.0" layoutY="179.0" prefHeight="26.0" prefWidth="150.0" />
+      <Button layoutX="197.0" layoutY="179.0" mnemonicParsing="false" onAction="#switchToCreateUserStoryItemPage" prefHeight="26.0" prefWidth="102.0" text="New Story Item" />
+      <TextArea fx:id="userStoryItemDescription" layoutX="29.0" layoutY="238.0" prefHeight="50.0" prefWidth="185.0" />
       <Label layoutX="29.0" layoutY="216.0" text="Description" />
       <Label layoutX="71.0" layoutY="311.0" text="Story Points:" />
+      <TextField fx:id="itemScoreTextField" layoutX="362.0" layoutY="250.0" prefHeight="26.0" prefWidth="23.0" />
+      <Button fx:id="confirmScoreButton" layoutX="399.0" layoutY="250.0" mnemonicParsing="false" onAction="#confirmScore" text="Confirm Score" />
+      <Label layoutX="362.0" layoutY="225.0" text="Item Score" />
    </children>
 </AnchorPane>
