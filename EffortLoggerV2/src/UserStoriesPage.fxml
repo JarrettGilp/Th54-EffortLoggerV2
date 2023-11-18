@@ -19,7 +19,7 @@
       <Label layoutX="32.0" layoutY="121.0" text="Recent User Stories" />
       <TextField fx:id="createUserStoryTitleField" layoutX="321.0" layoutY="148.0" prefHeight="26.0" prefWidth="242.0" />
       <Button layoutX="32.0" layoutY="336.0" mnemonicParsing="false" onAction="#switchToUserPage" prefHeight="26.0" prefWidth="86.0" text="Exit" />
-      <Button layoutX="388.0" layoutY="337.0" mnemonicParsing="false" onAction="#createUserStory" text="Create User Story" />
+      <Button fx:id="createUserStoryButton" layoutX="388.0" layoutY="337.0" mnemonicParsing="false" onAction="#createUserStory" text="Create User Story" />
       <TextArea fx:id="createUserStoryDescriptionTestArea" layoutX="321.0" layoutY="207.0" prefHeight="110.0" prefWidth="242.0" />
       <Label layoutX="321.0" layoutY="121.0" text="Title" />
       <Label layoutX="321.0" layoutY="182.0" text="Description" />

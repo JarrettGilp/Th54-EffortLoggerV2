@@ -65,17 +65,21 @@ public class SceneController implements Initializable{
 	// TEXT AREAS
 	@FXML TextArea createUserStoryDescriptionTestArea;
 	@FXML TextArea newUserStoryItemDescription;
-	@FXML ListView recentUserStoriesList;
 	@FXML ListView userStoryDataListView;
 	@FXML Label usernameLabel;
 	@FXML Label supervisorLabel;
 	// CHOICE BOXES
 	@FXML ChoiceBox<String> userStoryChoiceBox = new ChoiceBox<>();
 	@FXML ChoiceBox<String> userStoryItemChoiceBox = new ChoiceBox<>();
-	@FXML ObservableList<String> userStoryChoices;
+	// LIST VIEW
+	@FXML ListView recentUserStoriesList = new ListView<String>();
+	@FXML ObservableList<String> userStoryChoices = FXCollections.observableArrayList();
+	@FXML ObservableList<String> testList = FXCollections.observableArrayList("TEST");
 	// BUTTONS
 	@FXML private Button logoutButton;
 	@FXML private Button confirmScoreButton = new Button();
+	@FXML private Button createUserStoryButton = new Button();
+	@FXML private Button userStoriesButton = new Button();
 	@FXML private AnchorPane userPagePane;
 	
 	// TEST VARIABLES
@@ -150,7 +154,10 @@ public class SceneController implements Initializable{
 	// GOES TO LOGIN PAGE (HOME PAGE)
 	public void switchToHomePage(ActionEvent event) throws IOException {
 		
-		Parent root = FXMLLoader.load(getClass().getResource("/EffortLoggerLogin.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/EffortLoggerLogin.fxml"));
+		root = loader.load();
+		//Parent root = FXMLLoader.load(getClass().getResource("/EffortLoggerLogin.fxml"));
+		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
 		stage.setScene(scene);
@@ -161,7 +168,9 @@ public class SceneController implements Initializable{
 	// GOES TO USER PAGE
 	public void switchToUserPage(ActionEvent event) throws IOException {
 				
-		Parent root = FXMLLoader.load(getClass().getResource("/UserPage.fxml"));
+		//Parent root = FXMLLoader.load(getClass().getResource("/UserPage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -173,8 +182,7 @@ public class SceneController implements Initializable{
 	// GOES TO SUPERVISOR PAGE
 	public void switchToSupervisorPage(ActionEvent event) throws IOException {
 		
-		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorPage.fxml"));
-		
+		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorPage.fxml"));	
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
 		root = loader.load();
 		
@@ -214,12 +222,17 @@ public class SceneController implements Initializable{
 	// GOES TO USER STORIES PAGE
 	public void switchToUserStoriesPage(ActionEvent event) throws IOException {
 		
-		Parent root = FXMLLoader.load(getClass().getResource("/UserStoriesPage.fxml"));
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("/UserStoriesPage.fxml"));
+		Parent root = loader.load();
+		recentUserStoriesList.setItems(userStoryChoices);
+		//recentUserStoriesList.setItems(userStoryChoices);
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
+
 	}
 	
 	// GOES TO PLANNING POKER PAGE
@@ -482,34 +495,49 @@ public class SceneController implements Initializable{
 	// CREATES A USER STORY WITH DATE, TITLE, AND DESCRIPTION FIELDS
 	public void createUserStory(ActionEvent event) {
 		
+		int counter = 0;
+		
 		String title = createUserStoryTitleField.getText();
 		String description = createUserStoryDescriptionTestArea.getText();
 		ArrayList<UserStoryItem> userStoryItem = new ArrayList<UserStoryItem>();
 		
 		UserStory newStory = new UserStory(getDate(), title, description, userStoryItem);
 		
+		// IF STORIES IS NOT EMPTY
 		if (stories.size() != 0) {
-				
+			// CHECK IF TITLE EXISTS IN USER STORIES ALREADY
 			for(int i = 0; i < stories.size(); i++) {
-				
-				if ( !stories.get(i).getTitle().equals(title) ) {
-					stories.add(newStory);
-					recentUserStoriesList.getItems().add(stories.get(i).getDate() + " " + stories.get(i).getTitle() + "; " + stories.get(i).getDescription());
-					printStories(stories);
-				}
-				else {
-					System.out.println("User Story already exists!\n");
-					break;
+				if ( stories.get(i).getTitle().equals(newStory.getTitle()) ) {
+					counter++;
 				}
 			}
-
+			
+			// IF TITLE DID EXIST
+			if ( counter == 0 ) {
+				stories.add(newStory);
+				
+				for(int j = 0; j < stories.size(); j++) {
+					userStoryChoices.add(stories.get(j).getDate() + " " + stories.get(j).getTitle() + "; " + stories.get(j).getDescription());
+				}
+				//FIND OUT HOW TO CLEAR LIST FOR EASIER UPDATING :: recentUserStoriesList.getItems().clear();
+				
+				for(int k = 0; k < userStoryChoices.size() - 1; k++) {
+					recentUserStoriesList.getItems().remove(0);
+				}
+				
+				recentUserStoriesList.setItems(userStoryChoices);
+				printStories(stories);
+			} else {
+				System.out.println("User Story already exists!\n");
+			}
 		} 
 		else {
 			stories.add(newStory);
-			recentUserStoriesList.getItems().add(stories.get(0).getDate() + " " + stories.get(0).getTitle() + "; " + stories.get(0).getDescription());
+			userStoryChoices.add(stories.get(0).getDate() + " " + stories.get(0).getTitle() + "; " + stories.get(0).getDescription());
+			recentUserStoriesList.setItems(userStoryChoices);
 			printStories(stories);
 		}
-				
+		
 	}
 	
 	// CREATES A NEW USER STORY ITEM
@@ -517,7 +545,7 @@ public class SceneController implements Initializable{
 		
 		// GET UserStory object from choice box in Planning poker page
 		
-		//UserStory selectedUserStory = userStoryChoiceBox.getItems();
+		// UserStory selectedUserStory = userStoryChoiceBox.getItems();
 		// UserStory userStory = effortData.get(index in choice box if possible);
 		String itemTitle = newUserStoryItemTitle.getText();
 		String itemDesc = newUserStoryItemDescription.getText();
@@ -526,7 +554,7 @@ public class SceneController implements Initializable{
 		//selectedUserStory.userStoryItems.add(newItem);
 		
 		switchToPlanningPokerPage(event);
-
+		
 	}
 	
 	// GETS DATE IN FORMAT (YYYY-MM-DD)
@@ -602,8 +630,6 @@ public class SceneController implements Initializable{
  			System.out.println("Item score field is empty.");
  		} else {
 	 		// GET USER STORY ITEM FROM CHOICE BOX ON PLANNING POKER PAGE
-	 		//UserStoryItem item;
-	 		//int score = Integer.parseInt(itemScoreTextField.getText());
  			
  			String selectedItem = getSelectedItem();
  			
@@ -669,27 +695,25 @@ public class SceneController implements Initializable{
 		stage.close();
 		
 	}
-
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		
-		userStoryChoiceBox.getItems().addAll(testData);
+						
 		userStoryChoiceBox.setOnAction(this::getData);
 
 		userStoryItemChoiceBox.setOnAction(this::getItemData);
 		confirmScoreButton.setOnAction(this::confirmScore);
-		//userStoryChoiceBox.getSelectionModel().selectLast();
 		
-		//userStoryChoiceBox.getItems().add(stories.get(0).getTitle());
-
-		//userStoryChoiceBox.getItems().add("Hello");
+		userStoryChoiceBox.getItems().addAll(testData);
 	}
 	
 	private void getData(ActionEvent event) {
 		String selectedStory = userStoryChoiceBox.getValue();
 		String selectedItem = userStoryItemChoiceBox.getValue();
 		
+		//for (int i = 0; i < stories.size(); i++) {	
+		
+		//if (selectedStory == stories(i).getTitle())
 		if (selectedStory == "User Story 1") {
 			// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 			userStoryItemChoiceBox.getItems().addAll(testItems1);
@@ -700,14 +724,14 @@ public class SceneController implements Initializable{
 		if (selectedStory == "User Story 2") {
 			userStoryItemChoiceBox.getItems().addAll(testItems2);
 			userStoryDataListView.getItems().add("Story: " + selectedStory);
-
 		}
 		// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 		if (selectedStory == "User Story 3") {
 			userStoryItemChoiceBox.getItems().addAll(testItems3);
 			userStoryDataListView.getItems().add("Story: " + selectedStory);
-
 		}
+			
+		//}
 	}
 	
 	private void getItemData(ActionEvent event) {
@@ -724,14 +748,11 @@ public class SceneController implements Initializable{
 		if (selectedItem == "Story 1 Item 2") {
 			setSelectedItem("Story 1 Item 2");
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 		if (selectedItem == "Story 1 Item 3") {
 			setSelectedItem("Story 1 Item 3");
-
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		
 		
@@ -739,21 +760,18 @@ public class SceneController implements Initializable{
 			setSelectedItem("Story 2 Item 1");
 
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 		if (selectedItem == "Story 2 Item 2") {
 			setSelectedItem("Story 2 Item 2");
 
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 		if (selectedItem == "Story 2 Item 3") {
 			setSelectedItem("Story 2 Item 3");
 
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		
 		
@@ -761,14 +779,12 @@ public class SceneController implements Initializable{
 			setSelectedItem("Story 3 Item 1");
 
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 		if (selectedItem == "Story 3 Item 2") {
 			setSelectedItem("Story 3 Item 2");
 
 			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-
 		}
 		// POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
 		if (selectedItem == "Story 3 Item 3") {
