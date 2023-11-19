@@ -264,15 +264,16 @@ public class SceneController implements Initializable{
 	// GOES TO CREATE USER STORY PAGE
 	public void switchToCreateUserStoryItemPage(ActionEvent event) throws IOException {
 		
-		// IF THE USERSTORY IN CHOICEBOX IS SELECTED, FIND THAT STORY IN 'STORIES' AND PASS THE STORY TO A DATA STRUCTURE 'tempStory' SO IT CAN HAVE THE NEW ITEM ADDED TO IT
+		// CAPTURE SELECTED USER STORY
+		// IF THE USERSTORY IN CHOICEBOX IS SELECTED, FIND THE STORY WITH THE SAME VALUE IN THE CHOICEBOX IN 'STORIES' AND SET THAT STORY TO A DATA STRUCTURE 'tempStory' SO IT CAN HAVE THE NEW ITEM ADDED TO IT
 		System.out.println(userStoryChoiceBox.getValue());
 		for(int i = 0; i < stories.size(); i++) {
 			if (userStoryChoiceBox.getValue().equals(stories.get(i).getTitle())) {
-				//tempStory[0] = stories.get(i);
 				setTemp(stories.get(i));
 			}
 		}
 		
+		// LOAD CREATE USER STORY ITEM PAGE
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("/CreateUserStoryItemPage.fxml"));
 		Parent root = loader.load();
@@ -584,11 +585,10 @@ public class SceneController implements Initializable{
 		UserStoryItem newItem = new UserStoryItem(itemTitle, itemDesc, 0);
 		list.add(newItem);
 		
-		//System.out.println(getTemp().getTitle());
-		//getTemp().setItemList(list);
-		//stories.get(0).setItemList(list);
+		// CHANGE LATER - MAKES FIRST USER STORY MADE IN USER STORY CREATION HAVE ITS USER STORY ITEMS PART OF IT GIVEN A NEW LIST WITH THE NEW CREATED USER STORY ITEM IN IT
 		stories.get(0).userStoryItems = list;
 		
+		// LOOKS AT THE FIRST STORY IN THE LIST AND DISPLAYS THE STORY TITLE, STORY DESCRIPTION, AND THE TITLE OF THE NEW ITEM WE GAVE THE STORY
 		for(int j = 0; j < stories.size(); j++) {
 			System.out.println("User Story: " + stories.get(j).getTitle() + " - User Story Description: " + stories.get(j).getDescription() + " - New Item Title: " + stories.get(j).userStoryItems.get(0).getStoryTitle());
 		}	
