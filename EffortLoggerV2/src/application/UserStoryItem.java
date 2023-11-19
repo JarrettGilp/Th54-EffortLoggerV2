@@ -14,28 +14,30 @@ public class UserStoryItem extends UserStory{
 	}
 	
 	// GETTERS
-	public String getTitle() {
+	
+	public String getStoryTitle() {
 		return title;
 	}
 	
-	public String getDescription() {
+	public String getStoryDescription() {
 		return description;
 	}
 	
-	public int getScore() {
+	public int getStoryScore() {
 		return score;
 	}
 	
 	//SETTERS
-	public void setTitle(String title) {
+	
+	public void setStoryTitle(String title) {
 		this.title = title;
 	}
 	
-	public void setDescription(String description) {
+	public void setStoryDescription(String description) {
 		this.description = description;
 	}
 	
-	public void setScore(int score) {
+	public void setStoryScore(int score) {
 		this.score = score;
 	}
 }

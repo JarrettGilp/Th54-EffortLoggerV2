@@ -7,7 +7,7 @@ public class UserStory extends SceneController{
 	private String date;
 	private String title;
 	private String description;
-	private ArrayList<UserStoryItem> userStoryItems = new ArrayList<UserStoryItem>();
+	public ArrayList<UserStoryItem> userStoryItems = new ArrayList<UserStoryItem>();
 	
 	// DEFAULT CONSTRUCTOR
 	public UserStory() {}
@@ -52,8 +52,5 @@ public class UserStory extends SceneController{
 		this.date = date;
 	}
 	
-	public void setItemList(ArrayList<UserStoryItem> userStoryItems) {
-		this.userStoryItems = userStoryItems;
-	}
 	
 }
