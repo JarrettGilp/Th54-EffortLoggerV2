@@ -14,7 +14,7 @@ public class UserStoriesController {
 	// CONSTRUCTOR
 	public UserStoriesController() {
 		storyList = FXCollections.observableArrayList();
-		storyList.add(new UserStory("", "", "", userStoryItems));
+		//storyList.add(new UserStory("", "", "", userStoryItems));
 	}
 	
 	// GET LIST

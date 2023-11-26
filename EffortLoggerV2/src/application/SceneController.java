@@ -82,8 +82,6 @@ public class SceneController implements Initializable{
 	// LIST VIEW AND OBSERVABLE LISTS
 	@FXML ListView recentUserStoriesList = new ListView<String>();
 	@FXML ListView userStoryDataListView;
-	@FXML ObservableList<String> userStoryChoices = FXCollections.observableArrayList();
-	@FXML ObservableList<String> testList = FXCollections.observableArrayList("TEST");
 	// BUTTONS AND PANES
 	@FXML private Button logoutButton;
 	@FXML private Button confirmScoreButton = new Button();
@@ -101,12 +99,25 @@ public class SceneController implements Initializable{
 	private String selectedItem;
 	private int scoreCount = 0;
 	private int totalScore = 0;
-	private String[] testData = {"User Story 1", "User Story 2", "User Story 3"};
+	private static String[] testData = {"User Story 1", "User Story 2", "User Story 3"};
 	private String[] testItems1 = {"Story 1 Item 1", "Story 1 Item 2", "Story 1 Item 3"};
 	private String[] testItems2 = {"Story 2 Item 1", "Story 2 Item 2", "Story 2 Item 3"};
 	private String[] testItems3 = {"Story 3 Item 1", "Story 3 Item 2", "Story 3 Item 3"};
 	
+	private static ArrayList<String> choices = new ArrayList<String>();
+	private static ArrayList<String> itemChoices = new ArrayList<String>();
+	
+	public static ArrayList<String> obsItemArrList = new ArrayList<String>();
+	
+	// might not need
+	@FXML ObservableList<String> userStoryChoices = FXCollections.observableArrayList();
+	
+	@FXML ObservableList<String> storyList = FXCollections.observableArrayList(choices);
+	@FXML ObservableList<String> itemList = FXCollections.observableArrayList(itemChoices);
+	@FXML ObservableList<String> obsItemsList = FXCollections.observableArrayList(obsItemArrList);
+	
 	private UserStory tempStory;
+	private static String storyBoxValue;
 	
 	// DATA STRUCTURES
 		private static ArrayList<String> userList = new ArrayList<String>(100) {{
@@ -238,9 +249,6 @@ public class SceneController implements Initializable{
 		loader.setLocation(getClass().getResource("/UserStoriesPage.fxml"));
 		Parent root = loader.load();
 		
-		//recentUserStoriesList.setItems(userStoryChoices);
-		//recentUserStoriesList.setItems(userStoryChoices);
-		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
 		stage.setScene(scene);
@@ -265,6 +273,9 @@ public class SceneController implements Initializable{
 	public void switchToCreateUserStoryItemPage(ActionEvent event) throws IOException {
 		
 		// CAPTURE SELECTED USER STORY
+		String selectedStory = userStoryChoiceBox.getValue();		
+		setStoryBoxValue(selectedStory);
+
 		// IF THE USERSTORY IN CHOICEBOX IS SELECTED, FIND THE STORY WITH THE SAME VALUE IN THE CHOICEBOX IN 'STORIES' AND SET THAT STORY TO A DATA STRUCTURE 'tempStory' SO IT CAN HAVE THE NEW ITEM ADDED TO IT
 		System.out.println(userStoryChoiceBox.getValue());
 		for(int i = 0; i < stories.size(); i++) {
@@ -522,8 +533,9 @@ public class SceneController implements Initializable{
 		String title = createUserStoryTitleField.getText();
 		String description = createUserStoryDescriptionTestArea.getText();
 		ArrayList<UserStoryItem> userStoryItem = new ArrayList<UserStoryItem>();
+		ObservableList<String> obsItemList = FXCollections.observableArrayList(obsItemArrList);
 		
-		UserStory newStory = new UserStory(getDate(), title, description, userStoryItem);
+		UserStory newStory = new UserStory(getDate(), title, description, userStoryItem, obsItemList);
 		
 		// IF STORIES LIST IS NOT EMPTY
 		if (stories.size() != 0) {
@@ -534,9 +546,12 @@ public class SceneController implements Initializable{
 				}
 			}
 			
-			// IF TITLE DID EXIST ALREADY IN STORIES LIST
+			// IF TITLE DOES NOT EXIST ALREADY IN STORIES LIST
 			if ( counter == 0 ) {
 				stories.add(newStory);
+				
+				// ADD NEW STORY TO PLANNING POKER USER STORY CHOICEBOX
+				choices.add(newStory.getTitle());
 				
 				// ADD STORY ITEMS INTO USERSTORYCHOICES
 				for(int j = 0; j < stories.size(); j++) {
@@ -557,20 +572,39 @@ public class SceneController implements Initializable{
 			stories.add(newStory);
 			userStoryChoices.add(stories.get(0).getDate() + " " + stories.get(0).getTitle() + "; " + stories.get(0).getDescription());
 			recentUserStoriesList.setItems(userStoryChoices);
+			
+			// ADD NEW STORY TO PLANNING POKER USER STORY CHOICEBOX
+			choices.add(newStory.getTitle());
+
 			printStories(stories);
 		}
 		
 	}
 	
-	
-	
-	
+	// GETS TEMPSTORY
 	public UserStory getTemp() {
 		return tempStory;
 	}
+	
+	// SETS TEMPSTORY
 	public void setTemp(UserStory tempStory) {
 		this.tempStory = tempStory;
 	}
+	
+	
+	
+	
+	
+	
+	public String getStoryBoxValue() {
+		return storyBoxValue;
+	}
+	
+	public void setStoryBoxValue(String storyBoxValue) {
+		this.storyBoxValue = storyBoxValue;
+	}
+	
+	
 	
 	
 	
@@ -580,21 +614,38 @@ public class SceneController implements Initializable{
 				
 		String itemTitle = newUserStoryItemTitle.getText();
 		String itemDesc = newUserStoryItemDescription.getText();
+		String capturedStory = getStoryBoxValue();	
+		System.out.println("Selected Story is: " + capturedStory);
 		
-		ArrayList<UserStoryItem> list = new ArrayList<UserStoryItem>();
 		UserStoryItem newItem = new UserStoryItem(itemTitle, itemDesc, 0);
-		list.add(newItem);
-		
-		// CHANGE LATER - MAKES FIRST USER STORY MADE IN USER STORY CREATION HAVE ITS USER STORY ITEMS PART OF IT GIVEN A NEW LIST WITH THE NEW CREATED USER STORY ITEM IN IT
-		stories.get(0).userStoryItems = list;
-		
-		// LOOKS AT THE FIRST STORY IN THE LIST AND DISPLAYS THE STORY TITLE, STORY DESCRIPTION, AND THE TITLE OF THE NEW ITEM WE GAVE THE STORY
-		for(int j = 0; j < stories.size(); j++) {
-			System.out.println("User Story: " + stories.get(j).getTitle() + " - User Story Description: " + stories.get(j).getDescription() + " - New Item Title: " + stories.get(j).userStoryItems.get(0).getStoryTitle());
-		}	
+		/*
+		if( obsItemArrList.size() != 0) {
+			obsItemArrList.clear();
+		}
+		*/
+
+		for(int i = 0; i < stories.size(); i++ )  {
+			
+			for(int j = 0; j < stories.get(i).userStoryItems.size() + 1; j++) {
+				
+				if ( capturedStory.equals(stories.get(i).getTitle()) )
+				{
+					stories.get(i).userStoryItems.add(newItem);
+					itemChoices.add(newItem.getStoryTitle());
+					obsItemArrList.add(newItem.getStoryTitle());
+					
+					//obsItemArrList.add(stories.get(i).userStoryItems.get(j).getStoryTitle());
+					
+					break;
+				}
+				
+			}
+		}
 		
 		switchToPlanningPokerPage(event);
 	}
+	
+	
 	
 	// GETS DATE IN FORMAT (YYYY-MM-DD)
  	public String getDate() {
@@ -677,7 +728,22 @@ public class SceneController implements Initializable{
  			// IF STMT'S CHECK WHICH POINT WAS CHOSEN AND DESIGNATES THAT TO SELECTED ITEM
  			String selectedItem = getSelectedItem();
  			
-	 		if (itemScoreTextField.getText().equals("0") && selectedItem.equals("Story 1 Item 1") )
+ 			if( itemScoreTextField.getText().equals("0") ) {
+ 				
+ 				if( selectedItem != null ) {
+ 					score = 0;
+ 					setTotalScore(totalScore + score);
+ 					setScoreCount(scoreCount + 1);
+ 					
+ 					userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
+ 					itemScoreTextField.setText("");
+ 				}
+ 				else {
+ 					System.out.println("\nThere is no item selected.");
+ 					itemScoreTextField.setText("");
+ 				}
+ 			}
+ 			else if (itemScoreTextField.getText().equals("0") && selectedItem.equals("Story 1 Item 1") )
 	 		{
 	 			score = 0;
 	 			setTotalScore(totalScore + score);
@@ -685,8 +751,12 @@ public class SceneController implements Initializable{
 	 		
 				userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
 				itemScoreTextField.setText("");
+				
+				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
+		 		int average = getTotalScore() / getScoreCount();
+				userStoryDataListView.getItems().add("Points Average: " + average);
 	 		}
-	 		if (itemScoreTextField.getText().equals("1"))
+	 		else if (itemScoreTextField.getText().equals("1"))
 	 		{
 	 			score = 1;
 	 			setScoreCount(scoreCount + 1);
@@ -694,8 +764,12 @@ public class SceneController implements Initializable{
 
 				userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
 				itemScoreTextField.setText("");
+				
+				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
+		 		int average = getTotalScore() / getScoreCount();
+				userStoryDataListView.getItems().add("Points Average: " + average);
 	 		}
-	 		if (itemScoreTextField.getText().equals("2"))
+	 		else if (itemScoreTextField.getText().equals("2"))
 	 		{
 	 			score = 2;
 	 			setScoreCount(scoreCount + 1);
@@ -703,8 +777,12 @@ public class SceneController implements Initializable{
 
 				userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
 				itemScoreTextField.setText("");
+				
+				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
+		 		int average = getTotalScore() / getScoreCount();
+				userStoryDataListView.getItems().add("Points Average: " + average);
 	 		}
-	 		if (itemScoreTextField.getText().equals("3"))
+	 		else if (itemScoreTextField.getText().equals("3"))
 	 		{
 	 			score = 3;
 	 			setScoreCount(scoreCount + 1);
@@ -712,8 +790,12 @@ public class SceneController implements Initializable{
 
 				userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
 				itemScoreTextField.setText("");
+				
+				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
+		 		int average = getTotalScore() / getScoreCount();
+				userStoryDataListView.getItems().add("Points Average: " + average);
 	 		}
-	 		if (itemScoreTextField.getText().equals("4"))
+	 		else if (itemScoreTextField.getText().equals("4"))
 	 		{
 	 			score = 4;
 	 			setScoreCount(scoreCount + 1);
@@ -721,12 +803,15 @@ public class SceneController implements Initializable{
 
 				userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
 				itemScoreTextField.setText("");
+				
+				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
+		 		int average = getTotalScore() / getScoreCount();
+				userStoryDataListView.getItems().add("Points Average: " + average);
 	 		}
-	 		
-	 		// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
-	 		int average = getTotalScore() / getScoreCount();
-			userStoryDataListView.getItems().add("Points Average: " + average);
-	 		//item.setScore(score);
+	 		else {
+	 			System.out.println("\nNo score provided.");
+	 		}
+
  		}
  		
  	}
@@ -741,17 +826,99 @@ public class SceneController implements Initializable{
 	// FILLS CHOICEBOXES WITH DATA VALUES WHEN PROGRAM RUNS / DETECTS USER INTERACTION WITH CHOICEBOXES
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// PLANNING POKER PAGE - USER STORY CHOICEBOX
+		
+		// PLANNING POKER - USER STORY CHOICE BOX
 		userStoryChoiceBox.setValue("-- Select a Story --");
-		userStoryChoiceBox.setOnAction(this::getData);
-		userStoryChoiceBox.getItems().addAll(testData);
-		// PLANNING POKER PAGE - USER STORY ITEMS
-		userStoryItemChoiceBox.setOnAction(this::getItemData);
+		userStoryChoiceBox.setOnAction(this::populateStoryChoiceBox);
+		userStoryChoiceBox.getItems().addAll(storyList);
+		
+		// PLANNING POKER PAGE - USER STORY ITEM CHOICE BOX
+		//userStoryItemChoiceBox.setOnAction(this::getItemData);
+		
+		/*if( !userStoryItemChoiceBox.getValue().equals("-- Select a Story --") ) {
+			//userStoryItemChoiceBox.setOnAction(this::populateStoryItemChoiceBox);
+			userStoryItemChoiceBox.getItems().addAll(itemList);
+		}*/
+		userStoryItemChoiceBox.setOnAction(this::populateStoryItemChoiceBox);
+		//userStoryItemChoiceBox.getItems().addAll(itemList);
+		
+		// SCORES FOR ITEMS
 		confirmScoreButton.setOnAction(this::confirmScore);
 	}
 	
+	// FILLS USER STORY CHOICE BOX WITH WHATEVER THE CURRENT VALUE(S) OF STORY LIST IS
+	private void populateStoryChoiceBox(ActionEvent event) {
+		//userStoryChoiceBox.getItems().addAll(storyList);
+		
+		if ( !userStoryChoiceBox.getValue().equals("-- Select a Story --") ) {
+			userStoryItemChoiceBox.setValue("-- Select an Item --");
+			userStoryItemDescription.setText("");
+					
+		}
+		else {
+			userStoryItemDescription.setText("");
+		}
+		
+		//userStoryItemChoiceBox.setValue("-- Select an Item --");
+	}
+	
+	private void populateStoryItemChoiceBox(ActionEvent event) {
+		
+		if ( userStoryItemChoiceBox.getValue().equals("-- Select an Item --") ) {
+			//userStoryItemChoiceBox.getItems().addAll(itemList);
+			userStoryItemChoiceBox.getItems().addAll(obsItemsList);
+		}
+		else {
+			setSelectedItem(userStoryItemChoiceBox.getValue());
+			
+			for(int i = 0; i < stories.size(); i++) {
+				
+				for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
+					if (stories.get(i).userStoryItems.get(j).getStoryTitle().equals(getSelectedItem()) ) {
+						userStoryItemDescription.setText(stories.get(i).userStoryItems.get(j).getStoryDescription());
+						break;
+					}
+				}
+			}
+			
+			
+			/*
+			for(int i = 0; i < stories.size(); i++) {
+				if(  ) {
+					userStoryItemDescription.setText(getSelectedItem().getStoryDescription());
+				}
+			}*/
+			
+		}
+		
+		/*
+		String storyTitle = userStoryChoiceBox.getValue();
+		
+		for(int i = 0; i < stories.size(); i++ ) {
+					
+					if( storyTitle == stories.get(i).getTitle() ){
+						
+						userStoryItemChoiceBox.setValue("-- Select an Item --");
+						
+						for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
+							
+							//userStoryItemChoiceBox.getItems().add(stories.get(i).userStoryItems.get(j).getStoryTitle());
+							itemChoices.add(stories.get(i).userStoryItems.get(j).getStoryTitle());
+							
+						}
+												
+						userStoryDataListView.getItems().add("Story: " + storyTitle);
+						
+					} else {
+						System.out.println("Story does not exist.");
+					}
+		}
+		*/
+	}
+	/*
 	// GETS DATA FOR USER STORY CHOICE BOX
 	private void getData(ActionEvent event) {
+		
 		String selectedStory = userStoryChoiceBox.getValue();		
 		
 		// IF STMT'S POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
@@ -770,59 +937,28 @@ public class SceneController implements Initializable{
 			userStoryItemChoiceBox.getItems().addAll(testItems3);
 			userStoryDataListView.getItems().add("Story: " + selectedStory);
 		}
-	}
-	
-	// GETS ITEM DATA FOR USER STORY ITEM CHOICE BOX AND DESC. BOX ON PLANNING POKER PAGE
-	private void getItemData(ActionEvent event) {
-		String selectedItem = userStoryItemChoiceBox.getValue();
 		
-		// IF STMT'S DETECT WHICH ITEM USER CHOOSES AND DISPLAYS DESC.
-		if (selectedItem == "Story 1 Item 1") {
-			setSelectedItem("Story 1 Item 1");
-			userStoryItemDescription.setText("Story 1 Item 1 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
+		
+		for(int i = 0; i < stories.size(); i++ ) {
+			
+			if( selectedStory == stories.get(i).getTitle() ){
+				userStoryItemChoiceBox.setValue("-- Select an Item --");
+				
+				for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
+					userStoryItemChoiceBox.getItems().add(stories.get(i).userStoryItems.get(j).getStoryTitle());
+				}
+				
+				//userStoryItemChoiceBox.getItems().addAll();
+				
+				userStoryDataListView.getItems().add("Story: " + selectedStory);
+			} else {
+				System.out.println("Story does not exist.");
+			}
 		}
-		if (selectedItem == "Story 1 Item 2") {
-			setSelectedItem("Story 1 Item 2");
-			userStoryItemDescription.setText("Story 1 Item 2 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 1 Item 3") {
-			setSelectedItem("Story 1 Item 3");
-			userStoryItemDescription.setText("Story 1 Item 3 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 2 Item 1") {
-			setSelectedItem("Story 2 Item 1");
-			userStoryItemDescription.setText("Story 2 Item 1 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 2 Item 2") {
-			setSelectedItem("Story 2 Item 2");
-			userStoryItemDescription.setText("Story 2 Item 2 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 2 Item 3") {
-			setSelectedItem("Story 2 Item 3");
-			userStoryItemDescription.setText("Story 2 Item 3 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 3 Item 1") {
-			setSelectedItem("Story 3 Item 1");
-			userStoryItemDescription.setText("Story 3 Item 1 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 3 Item 2") {
-			setSelectedItem("Story 3 Item 2");
-			userStoryItemDescription.setText("Story 3 Item 2 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
-		if (selectedItem == "Story 3 Item 3") {
-			setSelectedItem("Story 3 Item 3");
-			userStoryItemDescription.setText("Story 3 Item 3 description.");
-			//userStoryDataListView.getItems().add("Item: " + selectedItem);
-		}
+		
+		
+	}   */
 	
-	}
+	
 	
 }
