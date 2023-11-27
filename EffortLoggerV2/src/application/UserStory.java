@@ -12,21 +12,20 @@ public class UserStory extends SceneController{
 	private String title;
 	private String description;
 	public ArrayList<UserStoryItem> userStoryItems = new ArrayList<UserStoryItem>();
+	public int id;
 	
-	public static ArrayList<String> obsItemArrList = new ArrayList<String>();
-	@FXML ObservableList<String> obsItemsList = FXCollections.observableArrayList(obsItemArrList);
-	
+	public static ArrayList<String> obsItemArrList = new ArrayList<String>();	
 	
 	// DEFAULT CONSTRUCTOR
 	public UserStory() {}
 	
 	// USERSTORY CONSTRUCTOR
-	public UserStory(String date, String title, String description, ArrayList<UserStoryItem> userStoryItems, ObservableList<String> obsItemsList) {
+	public UserStory(String date, String title, String description, ArrayList<UserStoryItem> userStoryItems, int id) {
 		this.date = date;
 		this.title = title;
 		this.description = description;
 		this.userStoryItems = userStoryItems;
-		this.obsItemsList = obsItemsList;
+		this.id = id;
 	}
 	
 	// GETTERS
@@ -47,8 +46,8 @@ public class UserStory extends SceneController{
 		return userStoryItems;
 	}
 	
-	public ObservableList<String> getObsList() {
-		return obsItemsList;
+	public int getID() {
+		return id;
 	}
 	
 	// SETTERS
@@ -65,8 +64,8 @@ public class UserStory extends SceneController{
 		this.date = date;
 	}
 	
-	public void setObsList(ObservableList<String> obsItemsList) {
-		this.obsItemsList = obsItemsList;
+	public void setID(int id) {
+		this.id = id;
 	}
 	
 }

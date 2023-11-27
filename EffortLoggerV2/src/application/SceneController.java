@@ -60,6 +60,7 @@ public class SceneController implements Initializable{
 	private Parent root;
 	// STATES
 	private static Boolean loggedIn = false;
+	private static Boolean superLoggedIn = false;
 	// TEXT FIELDS
 	@FXML TextField usernameLoginTextField;
 	@FXML TextField passwordLoginTextField;
@@ -80,8 +81,8 @@ public class SceneController implements Initializable{
 	@FXML ChoiceBox<String> userStoryChoiceBox = new ChoiceBox<>();
 	@FXML ChoiceBox<String> userStoryItemChoiceBox = new ChoiceBox<>();
 	// LIST VIEW AND OBSERVABLE LISTS
-	@FXML ListView recentUserStoriesList = new ListView<String>();
-	@FXML ListView userStoryDataListView;
+	@FXML ListView<String> recentUserStoriesList = new ListView<String>();
+	@FXML ListView<String> userStoryDataListView;
 	// BUTTONS AND PANES
 	@FXML private Button logoutButton;
 	@FXML private Button confirmScoreButton = new Button();
@@ -90,6 +91,7 @@ public class SceneController implements Initializable{
 	@FXML private AnchorPane userPagePane;
 	// TEST VARIABLES
 	private static String supervisorUsername;
+	private static String capUsername;
 	private static String testUsername = "testuser";
 	private static String testPassword = "testpass";
 	private static String superTestUsername = "superuser";
@@ -99,15 +101,10 @@ public class SceneController implements Initializable{
 	private String selectedItem;
 	private int scoreCount = 0;
 	private int totalScore = 0;
-	private static String[] testData = {"User Story 1", "User Story 2", "User Story 3"};
-	private String[] testItems1 = {"Story 1 Item 1", "Story 1 Item 2", "Story 1 Item 3"};
-	private String[] testItems2 = {"Story 2 Item 1", "Story 2 Item 2", "Story 2 Item 3"};
-	private String[] testItems3 = {"Story 3 Item 1", "Story 3 Item 2", "Story 3 Item 3"};
-	
 	private static ArrayList<String> choices = new ArrayList<String>();
 	private static ArrayList<String> itemChoices = new ArrayList<String>();
-	
 	public static ArrayList<String> obsItemArrList = new ArrayList<String>();
+	public static ArrayList<ObservableList<String>> itemListList = new ArrayList<ObservableList<String>>();
 	
 	// might not need
 	@FXML ObservableList<String> userStoryChoices = FXCollections.observableArrayList();
@@ -118,6 +115,7 @@ public class SceneController implements Initializable{
 	
 	private UserStory tempStory;
 	private static String storyBoxValue;
+	private static int userStoryID = 0;
 	
 	// DATA STRUCTURES
 		private static ArrayList<String> userList = new ArrayList<String>(100) {{
@@ -199,14 +197,31 @@ public class SceneController implements Initializable{
 		scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
+		/*
+		String cappedUserName = getUsername();
 		
+		SceneController sceneController = loader.getController();
+		sceneController.displayName(cappedUserName);
+		*/
+		
+		if ( superLoggedIn == true ) {
+			String cappedUserName = getSuperUsername();
+			
+			SceneController sceneController = loader.getController();
+			sceneController.displaySupervisorName(cappedUserName);
+		} else {
+			String cappedUserName = getUsername();
+			
+			SceneController sceneController = loader.getController();
+			sceneController.displayName(cappedUserName);
+		}
 	}
 	
 	// GOES TO SUPERVISOR PAGE
 	public void switchToSupervisorPage(ActionEvent event) throws IOException {
 		
 		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorPage.fxml"));	
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
 		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -267,6 +282,7 @@ public class SceneController implements Initializable{
 		scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
+		
 	}
 	
 	// GOES TO CREATE USER STORY PAGE
@@ -276,23 +292,29 @@ public class SceneController implements Initializable{
 		String selectedStory = userStoryChoiceBox.getValue();		
 		setStoryBoxValue(selectedStory);
 
-		// IF THE USERSTORY IN CHOICEBOX IS SELECTED, FIND THE STORY WITH THE SAME VALUE IN THE CHOICEBOX IN 'STORIES' AND SET THAT STORY TO A DATA STRUCTURE 'tempStory' SO IT CAN HAVE THE NEW ITEM ADDED TO IT
-		System.out.println(userStoryChoiceBox.getValue());
-		for(int i = 0; i < stories.size(); i++) {
-			if (userStoryChoiceBox.getValue().equals(stories.get(i).getTitle())) {
-				setTemp(stories.get(i));
+		// IF A USER STORY IS NOT SELECTED
+		if( userStoryChoiceBox.getValue().equals("-- Select a Story --") ) {
+			System.out.println("\nNo User story is selected.");
+		} // IF A USER STORY IS SELECTED
+		else {
+			// IF THE USERSTORY IN CHOICEBOX IS SELECTED, FIND THE STORY WITH THE SAME VALUE IN THE CHOICEBOX IN 'STORIES' AND SET THAT STORY TO A DATA STRUCTURE 'tempStory' SO IT CAN HAVE THE NEW ITEM ADDED TO IT
+			System.out.println(userStoryChoiceBox.getValue());
+			for(int i = 0; i < stories.size(); i++) {
+				if (userStoryChoiceBox.getValue().equals(stories.get(i).getTitle())) {
+					setTemp(stories.get(i));
+				}
 			}
+			
+			// LOAD CREATE USER STORY ITEM PAGE
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/CreateUserStoryItemPage.fxml"));
+			Parent root = loader.load();
+			
+			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+			scene = new Scene(root);
+			stage.setScene(scene);
+			stage.show();
 		}
-		
-		// LOAD CREATE USER STORY ITEM PAGE
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/CreateUserStoryItemPage.fxml"));
-		Parent root = loader.load();
-		
-		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-		scene = new Scene(root);
-		stage.setScene(scene);
-		stage.show();
 	}
 	
 	// DISPLAYS NAME ON USER PAGE AFTER USER LOGS IN
@@ -305,7 +327,8 @@ public class SceneController implements Initializable{
 	// DISPLAYS NAME ON SUPERVISOR PAGE AFTER SUPERVISOR LOGS IN
 	public void displaySupervisorName(String username) {
 		
-		supervisorLabel.setText("Welcome Supervisor: " + username);
+		usernameLabel.setText("Welcome Supervisor: " + username);
+		//supervisorLabel.setText("Welcome Supervisor: " + username);
 		
 	}
 	
@@ -340,6 +363,16 @@ public class SceneController implements Initializable{
 	{
 		list.add(username);
 		list.add(password);
+	}
+	
+	// SET USERNAME FOR LABEL ON USER PAGE
+	public void setUsername(String capUsername) {
+		this.capUsername = capUsername;
+	}
+	
+	// GET USERNAME FOR LABEL ON USER PAGE
+	public String getUsername() {
+		return capUsername;
 	}
 	
 	// SETTER FOR SUPERVISOR USERNAME - USED FOR LABEL
@@ -378,8 +411,11 @@ public class SceneController implements Initializable{
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
 		root = loader.load();
 		
+		setUsername(username);
+		String cappedUserName = getUsername();
+		
 		SceneController sceneController = loader.getController();
-		sceneController.displayName(username);
+		sceneController.displayName(cappedUserName);
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -423,8 +459,11 @@ public class SceneController implements Initializable{
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
 		root = loader.load();
 		
+		setUsername(username);
+		String cappedUserName = getUsername();
+		
 		SceneController sceneController = loader.getController();
-		sceneController.displayName(username);
+		sceneController.displayName(cappedUserName);
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -440,16 +479,20 @@ public class SceneController implements Initializable{
 	public void supervisorLogin(ActionEvent event) throws IOException {
 		
 		String user = getSuperUsername();
+		setSuperUsername(user);
 		
 		// IF SUPERVISOR IS LOGGING IN REGULARLY
 		if ( this.supervisorCodeTextField == null ) {
 			
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+			//FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+			superLoggedIn = true;
+			
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
 			root = loader.load();
 			System.out.println("\nYou have successfully logged in as supervisor!");	
 			
 			SceneController sceneController = loader.getController();
-			sceneController.displaySupervisorName(user);
+			sceneController.displaySupervisorName(getSuperUsername());
 			
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
@@ -481,12 +524,13 @@ public class SceneController implements Initializable{
 					printArray(buffer);
 					
 					// LOGGED IN TO SUPERVISOR PAGE
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
+					superLoggedIn = true;
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
 					root = loader.load();
 					System.out.println("\nYou have successfully logged in as supervisor!");
 					
 					SceneController sceneController = loader.getController();
-					sceneController.displaySupervisorName(user);
+					sceneController.displaySupervisorName(getSuperUsername());
 					
 					stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 					scene = new Scene(root);
@@ -513,6 +557,7 @@ public class SceneController implements Initializable{
 		// CONTROL VARIABLES SET BACK TO DEFAULT STATES
 		setSuperUsername("");
 		loggedIn = false;
+		superLoggedIn = false;
 		
 		// PRINTING OUT FOR TESTING
 		System.out.println("UserList - ");
@@ -533,9 +578,14 @@ public class SceneController implements Initializable{
 		String title = createUserStoryTitleField.getText();
 		String description = createUserStoryDescriptionTestArea.getText();
 		ArrayList<UserStoryItem> userStoryItem = new ArrayList<UserStoryItem>();
-		ObservableList<String> obsItemList = FXCollections.observableArrayList(obsItemArrList);
+		//ObservableList<String> obsItemList = FXCollections.observableArrayList(obsItemArrList);
+		ArrayList<String> arrList = new ArrayList<String>();
+		ObservableList<String> obsItemList = FXCollections.observableArrayList(arrList);
+
+		int id = getUserID();
+		setUserID(id + 1);
 		
-		UserStory newStory = new UserStory(getDate(), title, description, userStoryItem, obsItemList);
+		UserStory newStory = new UserStory(getDate(), title, description, userStoryItem, id);
 		
 		// IF STORIES LIST IS NOT EMPTY
 		if (stories.size() != 0) {
@@ -552,6 +602,12 @@ public class SceneController implements Initializable{
 				
 				// ADD NEW STORY TO PLANNING POKER USER STORY CHOICEBOX
 				choices.add(newStory.getTitle());
+				
+				arrList.add(newStory.getTitle());
+				obsItemList.addAll(arrList);
+				itemListList.add(obsItemList);
+				
+				
 				
 				// ADD STORY ITEMS INTO USERSTORYCHOICES
 				for(int j = 0; j < stories.size(); j++) {
@@ -575,10 +631,30 @@ public class SceneController implements Initializable{
 			
 			// ADD NEW STORY TO PLANNING POKER USER STORY CHOICEBOX
 			choices.add(newStory.getTitle());
+			
+			
+			arrList.add(newStory.getTitle());
+			obsItemList.addAll(arrList);
+			itemListList.add(obsItemList);
+			
 
 			printStories(stories);
 		}
 		
+		for(int i = 0; i < stories.size(); i++) {
+			System.out.print("\nStory " + (i + 1) + " ID is: ");
+			System.out.println(stories.get(i).getID());
+		}
+		
+		
+	}
+	
+	public int getUserID() {
+		return userStoryID;
+	}
+	
+	public void setUserID(int userStoryID) {
+		this.userStoryID = userStoryID;
 	}
 	
 	// GETS TEMPSTORY
@@ -591,23 +667,15 @@ public class SceneController implements Initializable{
 		this.tempStory = tempStory;
 	}
 	
-	
-	
-	
-	
-	
+	// GETS THE VALUE PRESENTLY SELECTED IN USER STORY CHOICEBOX WITHIN PLANNING POKER PAGE
 	public String getStoryBoxValue() {
 		return storyBoxValue;
 	}
 	
+	// SETS THE VALUE PRESENTLY SELECTED IN USER STORY CHOICEBOX WITHIN PLANNING POKER PAGE
 	public void setStoryBoxValue(String storyBoxValue) {
 		this.storyBoxValue = storyBoxValue;
 	}
-	
-	
-	
-	
-	
 	
 	// CREATES A NEW USER STORY ITEM
 	public void createUserStoryItem(ActionEvent event) throws IOException {
@@ -618,11 +686,6 @@ public class SceneController implements Initializable{
 		System.out.println("Selected Story is: " + capturedStory);
 		
 		UserStoryItem newItem = new UserStoryItem(itemTitle, itemDesc, 0);
-		/*
-		if( obsItemArrList.size() != 0) {
-			obsItemArrList.clear();
-		}
-		*/
 
 		for(int i = 0; i < stories.size(); i++ )  {
 			
@@ -634,85 +697,122 @@ public class SceneController implements Initializable{
 					itemChoices.add(newItem.getStoryTitle());
 					obsItemArrList.add(newItem.getStoryTitle());
 					
-					//obsItemArrList.add(stories.get(i).userStoryItems.get(j).getStoryTitle());
+					
+					int storyID = stories.get(i).getID();
+					itemListList.get(storyID).add(newItem.getStoryTitle());
+					
+					if (itemListList.get(storyID).get(0).equals(stories.get(i).getTitle()))
+					{
+						itemListList.get(storyID).remove(0);
+					}
 					
 					break;
 				}
 				
 			}
 		}
+		//TEST
+		System.out.println("\nItems are: ");
+		for(int h = 0; h < obsItemArrList.size(); h++) {
+			System.out.print(obsItemArrList.get(h) + " ");
+		}
+	
 		
 		switchToPlanningPokerPage(event);
 	}
 	
-	
-	
 	// GETS DATE IN FORMAT (YYYY-MM-DD)
- 	public String getDate() {
+ 	
+	// GET CURRENT DATE IN YYYY-MM-DD
+	public String getDate() {
 		String date = Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE);
 				
 		return date;
 	}
  	
  	// CHANGES USER STORY POINT VALUE TO 0
- 	public void change0() {
+ 	
+	// CHANGE SCORE FIELD TO 0
+	public void change0() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("0");
  	}
  	
  	// CHANGES USER STORY POINT VALUE TO 1
- 	public void change1() {
+ 	
+	// CHANGE SCORE FIELD TO 1
+	public void change1() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("1");
  	}
  	
  	// CHANGES USER STORY POINT VALUE TO 2
+ 	
+	// CHANGE SCORE FIELD TO 2
  	public void change2() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("2");
  	}
  	
  	// CHANGES USER STORY POINT VALUE TO 3
+ 	
+ 	// CHANGE SCORE FIELD TO 3
  	public void change3() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("3");
  	}
  	
  	// CHANGES USER STORY POINT VALUE TO 4
+ 	
+ 	// CHANGE SCORE FIELD TO 4
  	public void change4() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("4");
  	}
  	
  	// GET SELECTED ITEM IN CHOICEBOX
+ 	
+ 	// GET SELECTED USER STORY ITEM
  	public String getSelectedItem() {
  		return selectedItem;
  	}
  	
  	// SET SELECTED ITEM IN CHOICEBOX
+ 	
+ 	// SET SELECTED USER STORY ITEM
  	public void setSelectedItem(String selectedItem) {
  		this.selectedItem = selectedItem;
  	}
  	
  	// GETS SCORE COUNT
+ 	
+ 	// GET SCORE COUNT
  	public int getScoreCount() {
  		return scoreCount;
  	}
  	
  	// SETS SCORE COUNT
+ 	
+ 	// SET SCORE COUNT
  	public void setScoreCount(int scoreCount) {
  		this.scoreCount = scoreCount;
  	}
  	
  	// GETS TOTAL SCORE
+ 	
+ 	// GET TOTAL SCORE
  	public int getTotalScore() {
  		return totalScore;
  	}
  	
  	// SETS TOTAL SCORE
+ 	
+ 	// SET TOTAL SCORE
  	public void setTotalScore(int totalScore) {
  		this.totalScore = totalScore;
  	}
+ 	
+ 	// CONFIRM SCORE BUTTON IS CLICKED
  	
  	// CONFIRM SCORE BUTTON IS CLICKED
  	public void confirmScore(ActionEvent event) {
@@ -817,14 +917,18 @@ public class SceneController implements Initializable{
  	}
     		
 	// QUITS THE PROGRAM
-	public void exit(ActionEvent event) {
+	
+ 	// EXITS PROGRAM
+ 	public void exit(ActionEvent event) {
 		stage = (Stage) userPagePane.getScene().getWindow();
 		System.out.println("\nYou have successfully exited the program!");
 		stage.close();
 	}
+ 	
+ 	// INITIALIZE CHOICEBOXES IN PLANNING POKER
 	
 	// FILLS CHOICEBOXES WITH DATA VALUES WHEN PROGRAM RUNS / DETECTS USER INTERACTION WITH CHOICEBOXES
-	@Override
+	@Override	
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
 		// PLANNING POKER - USER STORY CHOICE BOX
@@ -847,14 +951,17 @@ public class SceneController implements Initializable{
 	}
 	
 	// FILLS USER STORY CHOICE BOX WITH WHATEVER THE CURRENT VALUE(S) OF STORY LIST IS
+	
+	// IF USER STORY CHOICEBOX IS CLICKED
 	private void populateStoryChoiceBox(ActionEvent event) {
 		//userStoryChoiceBox.getItems().addAll(storyList);
 		
+		// IF USER STORY HAS BEEN PICKED - MAKE IT SO USER STORY ITEM CHOICEBOX NOW ASKS FOR AN ITEM
 		if ( !userStoryChoiceBox.getValue().equals("-- Select a Story --") ) {
 			userStoryItemChoiceBox.setValue("-- Select an Item --");
 			userStoryItemDescription.setText("");
 					
-		}
+		} // IF USER STORY HAS NOT BEEN PICKED - USER STORY ITEM CHOICEBOX DOES NOT ASK FOR ITEM
 		else {
 			userStoryItemDescription.setText("");
 		}
@@ -862,34 +969,77 @@ public class SceneController implements Initializable{
 		//userStoryItemChoiceBox.setValue("-- Select an Item --");
 	}
 	
+	
+	// IF USER STORY ITEM CHOICEBOX IS CLICKED
 	private void populateStoryItemChoiceBox(ActionEvent event) {
 		
-		if ( userStoryItemChoiceBox.getValue().equals("-- Select an Item --") ) {
-			//userStoryItemChoiceBox.getItems().addAll(itemList);
-			userStoryItemChoiceBox.getItems().addAll(obsItemsList);
-		}
-		else {
-			setSelectedItem(userStoryItemChoiceBox.getValue());
+		// test    -    if a user story has been chosen first
+		if( !userStoryChoiceBox.getValue().equals("-- Select a Story --") )
+		{
 			
+			// SEARCH THROUGH STORIES
 			for(int i = 0; i < stories.size(); i++) {
 				
+				// IF ANYTHING IN STORIES EQUALS WHATS WAS SELECTED IN STORY CHOICEBOX
+				if( stories.get(i).getTitle().equals(getStoryBoxValue()) ) {
+					
+					int storyID = stories.get(i).getID();					
+					
+					System.out.println("\n\nList " + (storyID + 1) + "'s List Contents: ");
+					for(int j = 0; j < itemListList.get(storyID).size(); j++) {
+						System.out.print(itemListList.get(storyID).get(j) + " ");
+					}
+					
+					userStoryItemChoiceBox.getItems().setAll( itemListList.get(storyID) );
+					
+					// BREAK FROM WHOLE FOR LOOP IF ALL ITEMS FROM THE STORY WERE ADDED TO THE ARRAYLIST obsItemArrList
+					break;
+					
+				}
+				
+			}
+			
+			
+			// ADD THE ITEMS TO THE ITEMS CHOICE BOX
+			//userStoryItemChoiceBox.getItems().addAll(obsItemsList);
+		} else {
+			System.out.println("No story is selected.");
+		}
+		
+		
+		/*
+		
+		// FILL DESCRIPTION TEXT FIELD FOR SELECTED ITEM
+		if( userStoryItemChoiceBox.getValue().equals("-- Select an Item --") || userStoryItemChoiceBox.getValue().equals("")) {
+			System.out.println("");
+		} else {
+			// SET THE SELECTED ITEM TO THE ITEM USER CLICKED
+			setSelectedItem(userStoryItemChoiceBox.getValue());
+					
+			// SEARCH STORIES AND LOOK THROUGH THE USERSTORYITEMS IN EACH STORY - IF THE SELECTED ITEM IN ITEM CHOICE BOX EQUALS ANY EXISTING ITEM, DISPLAY THE DESCRIPTION FOR THAT ITEM IN DESC TEXTFIELD
+			for(int i = 0; i < stories.size(); i++) {
+						
 				for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
 					if (stories.get(i).userStoryItems.get(j).getStoryTitle().equals(getSelectedItem()) ) {
 						userStoryItemDescription.setText(stories.get(i).userStoryItems.get(j).getStoryDescription());
 						break;
 					}
 				}
+				
 			}
-			
-			
-			/*
-			for(int i = 0; i < stories.size(); i++) {
-				if(  ) {
-					userStoryItemDescription.setText(getSelectedItem().getStoryDescription());
-				}
-			}*/
-			
+					
 		}
+		
+		*/	
+
+		
+		
+		
+		
+		
+	
+		// UNDER THIS WAS ALREADY COMMENTED OUT
+		
 		
 		/*
 		String storyTitle = userStoryChoiceBox.getValue();
@@ -916,6 +1066,9 @@ public class SceneController implements Initializable{
 		*/
 	}
 	/*
+	
+	
+	
 	// GETS DATA FOR USER STORY CHOICE BOX
 	private void getData(ActionEvent event) {
 		
