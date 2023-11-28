@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.UserProfileController">
+    <VBox prefWidth="400" prefHeight="300" alignment="CENTER">
+        <children>
+            <Label text="User Profile Customization" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <GridPane alignment="CENTER" hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="100.0" percentWidth="0.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="100.0" percentWidth="0.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="SOMETIMES" />
+                    <RowConstraints vgrow="SOMETIMES" />
+                    <RowConstraints vgrow="SOMETIMES" />
+                    <RowConstraints vgrow="SOMETIMES" />
+                </rowConstraints>
+                <children>
+                    <Label text="Name:" GridPane.rowIndex="0" />
+                    <TextField fx:id="nameField" promptText="Enter your name" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label text="Email:" GridPane.rowIndex="1" />
+                    <TextField fx:id="emailField" promptText="Enter your email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <Label text="Address:" GridPane.rowIndex="2" />
+                    <TextField fx:id="addressField" promptText="Enter your address" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <Label text="Phone number:" GridPane.rowIndex="3" />
+                    <TextField fx:id="phoneField" promptText="Enter your phone number" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                </children>
+            </GridPane>
+            <HBox spacing="30" alignment="BOTTOM_RIGHT" style="-fx-padding: 30;">
+            	<Button text="Save Changes" onAction="#saveChanges" style="-fx-font-size: 14px;" />
+                <Button text="Navigate Role Management" onAction="#navigateToRoleManagement" style="-fx-font-size: 14px;" />
+            </HBox>
+        </children>
+    </VBox>
+</AnchorPane>
