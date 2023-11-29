@@ -98,7 +98,7 @@ public class SceneController implements Initializable{
 	private static String superTestPassword = "superpass";
 	private static String supervisorTestCode = "1234";
 	// PLANNING POKER VARIABLES
-	private String selectedItem;
+	private static String selectedItem;
 	private int scoreCount = 0;
 	private int totalScore = 0;
 	private static ArrayList<String> choices = new ArrayList<String>();
@@ -649,10 +649,12 @@ public class SceneController implements Initializable{
 		
 	}
 	
+	// GET USER ID NUMBER
 	public int getUserID() {
 		return userStoryID;
 	}
 	
+	// SET USER ID NUMBER
 	public void setUserID(int userStoryID) {
 		this.userStoryID = userStoryID;
 	}
@@ -722,98 +724,72 @@ public class SceneController implements Initializable{
 	}
 	
 	// GETS DATE IN FORMAT (YYYY-MM-DD)
- 	
-	// GET CURRENT DATE IN YYYY-MM-DD
-	public String getDate() {
+ 	public String getDate() {
 		String date = Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE);
 				
 		return date;
 	}
- 	
- 	// CHANGES USER STORY POINT VALUE TO 0
- 	
+	
 	// CHANGE SCORE FIELD TO 0
 	public void change0() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("0");
  	}
- 	
- 	// CHANGES USER STORY POINT VALUE TO 1
- 	
+	
 	// CHANGE SCORE FIELD TO 1
 	public void change1() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("1");
  	}
- 	
- 	// CHANGES USER STORY POINT VALUE TO 2
- 	
+
 	// CHANGE SCORE FIELD TO 2
  	public void change2() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("2");
  	}
- 	
- 	// CHANGES USER STORY POINT VALUE TO 3
- 	
+	
  	// CHANGE SCORE FIELD TO 3
  	public void change3() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("3");
  	}
- 	
- 	// CHANGES USER STORY POINT VALUE TO 4
- 	
+
  	// CHANGE SCORE FIELD TO 4
  	public void change4() {
  		itemScoreTextField.setText("");
 		itemScoreTextField.setText("4");
  	}
- 	
- 	// GET SELECTED ITEM IN CHOICEBOX
- 	
+
  	// GET SELECTED USER STORY ITEM
  	public String getSelectedItem() {
  		return selectedItem;
  	}
- 	
- 	// SET SELECTED ITEM IN CHOICEBOX
- 	
+
  	// SET SELECTED USER STORY ITEM
  	public void setSelectedItem(String selectedItem) {
  		this.selectedItem = selectedItem;
  	}
  	
- 	// GETS SCORE COUNT
- 	
  	// GET SCORE COUNT
  	public int getScoreCount() {
  		return scoreCount;
  	}
- 	
- 	// SETS SCORE COUNT
- 	
+
  	// SET SCORE COUNT
  	public void setScoreCount(int scoreCount) {
  		this.scoreCount = scoreCount;
  	}
- 	
- 	// GETS TOTAL SCORE
- 	
+
  	// GET TOTAL SCORE
  	public int getTotalScore() {
  		return totalScore;
  	}
- 	
- 	// SETS TOTAL SCORE
- 	
+	
  	// SET TOTAL SCORE
  	public void setTotalScore(int totalScore) {
  		this.totalScore = totalScore;
  	}
- 	
- 	// CONFIRM SCORE BUTTON IS CLICKED
- 	
+
  	// CONFIRM SCORE BUTTON IS CLICKED
  	public void confirmScore(ActionEvent event) {
  		 		
@@ -828,7 +804,11 @@ public class SceneController implements Initializable{
  			// IF STMT'S CHECK WHICH POINT WAS CHOSEN AND DESIGNATES THAT TO SELECTED ITEM
  			String selectedItem = getSelectedItem();
  			
- 			if( itemScoreTextField.getText().equals("0") ) {
+ 			if( selectedItem == null) {
+ 				System.out.println("There is no item selected.");
+ 			}
+ 			
+ 			else if( itemScoreTextField.getText().equals("0") ) {
  				
  				if( selectedItem != null ) {
  					score = 0;
@@ -837,25 +817,12 @@ public class SceneController implements Initializable{
  					
  					userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
  					itemScoreTextField.setText("");
- 				}
+ 					 				}
  				else {
  					System.out.println("\nThere is no item selected.");
  					itemScoreTextField.setText("");
  				}
  			}
- 			else if (itemScoreTextField.getText().equals("0") && selectedItem.equals("Story 1 Item 1") )
-	 		{
-	 			score = 0;
-	 			setTotalScore(totalScore + score);
-	 			setScoreCount(scoreCount + 1);
-	 		
-				userStoryDataListView.getItems().add("Item: " + selectedItem + " - Pt: " + score);
-				itemScoreTextField.setText("");
-				
-				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
-		 		int average = getTotalScore() / getScoreCount();
-				userStoryDataListView.getItems().add("Points Average: " + average);
-	 		}
 	 		else if (itemScoreTextField.getText().equals("1"))
 	 		{
 	 			score = 1;
@@ -917,201 +884,106 @@ public class SceneController implements Initializable{
  	}
     		
 	// QUITS THE PROGRAM
-	
- 	// EXITS PROGRAM
  	public void exit(ActionEvent event) {
 		stage = (Stage) userPagePane.getScene().getWindow();
 		System.out.println("\nYou have successfully exited the program!");
 		stage.close();
 	}
+	
+ 	// FILLS CHOICEBOXES WITH DATA VALUES WHEN PROGRAM RUNS / DETECTS USER INTERACTION WITH CHOICEBOXES
+ 	@Override	
+ 	public void initialize(URL arg0, ResourceBundle arg1) {
+ 		
+ 		// PLANNING POKER - USER STORY CHOICE BOX
+ 		userStoryChoiceBox.setValue("-- Select a Story --");
+ 		userStoryChoiceBox.setOnAction(this::populateStoryChoiceBox);
+ 		userStoryChoiceBox.getItems().addAll(storyList);
+ 		
+ 		// PLANNING POKER - USER STORY ITEM CHOICE BOX
+ 		userStoryItemChoiceBox.setOnAction(this::populateStoryItemChoiceBox);
+ 		
+ 		// SCORES FOR ITEMS
+ 		confirmScoreButton.setOnAction(this::confirmScore);
+ 	}
  	
- 	// INITIALIZE CHOICEBOXES IN PLANNING POKER
-	
-	// FILLS CHOICEBOXES WITH DATA VALUES WHEN PROGRAM RUNS / DETECTS USER INTERACTION WITH CHOICEBOXES
-	@Override	
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		
-		// PLANNING POKER - USER STORY CHOICE BOX
-		userStoryChoiceBox.setValue("-- Select a Story --");
-		userStoryChoiceBox.setOnAction(this::populateStoryChoiceBox);
-		userStoryChoiceBox.getItems().addAll(storyList);
-		
-		// PLANNING POKER PAGE - USER STORY ITEM CHOICE BOX
-		//userStoryItemChoiceBox.setOnAction(this::getItemData);
-		
-		/*if( !userStoryItemChoiceBox.getValue().equals("-- Select a Story --") ) {
-			//userStoryItemChoiceBox.setOnAction(this::populateStoryItemChoiceBox);
-			userStoryItemChoiceBox.getItems().addAll(itemList);
-		}*/
-		userStoryItemChoiceBox.setOnAction(this::populateStoryItemChoiceBox);
-		//userStoryItemChoiceBox.getItems().addAll(itemList);
-		
-		// SCORES FOR ITEMS
-		confirmScoreButton.setOnAction(this::confirmScore);
-	}
-	
-	// FILLS USER STORY CHOICE BOX WITH WHATEVER THE CURRENT VALUE(S) OF STORY LIST IS
-	
-	// IF USER STORY CHOICEBOX IS CLICKED
-	private void populateStoryChoiceBox(ActionEvent event) {
-		//userStoryChoiceBox.getItems().addAll(storyList);
-		
-		// IF USER STORY HAS BEEN PICKED - MAKE IT SO USER STORY ITEM CHOICEBOX NOW ASKS FOR AN ITEM
-		if ( !userStoryChoiceBox.getValue().equals("-- Select a Story --") ) {
-			userStoryItemChoiceBox.setValue("-- Select an Item --");
-			userStoryItemDescription.setText("");
-					
-		} // IF USER STORY HAS NOT BEEN PICKED - USER STORY ITEM CHOICEBOX DOES NOT ASK FOR ITEM
-		else {
-			userStoryItemDescription.setText("");
-		}
-		
-		//userStoryItemChoiceBox.setValue("-- Select an Item --");
-	}
-	
-	
-	// IF USER STORY ITEM CHOICEBOX IS CLICKED
-	private void populateStoryItemChoiceBox(ActionEvent event) {
-		
-		// test    -    if a user story has been chosen first
-		if( !userStoryChoiceBox.getValue().equals("-- Select a Story --") )
-		{
-			
-			// SEARCH THROUGH STORIES
-			for(int i = 0; i < stories.size(); i++) {
-				
-				// IF ANYTHING IN STORIES EQUALS WHATS WAS SELECTED IN STORY CHOICEBOX
-				if( stories.get(i).getTitle().equals(getStoryBoxValue()) ) {
-					
-					int storyID = stories.get(i).getID();					
-					
-					System.out.println("\n\nList " + (storyID + 1) + "'s List Contents: ");
-					for(int j = 0; j < itemListList.get(storyID).size(); j++) {
-						System.out.print(itemListList.get(storyID).get(j) + " ");
-					}
-					
-					userStoryItemChoiceBox.getItems().setAll( itemListList.get(storyID) );
-					
-					// BREAK FROM WHOLE FOR LOOP IF ALL ITEMS FROM THE STORY WERE ADDED TO THE ARRAYLIST obsItemArrList
-					break;
-					
-				}
-				
-			}
-			
-			
-			// ADD THE ITEMS TO THE ITEMS CHOICE BOX
-			//userStoryItemChoiceBox.getItems().addAll(obsItemsList);
-		} else {
-			System.out.println("No story is selected.");
-		}
-		
-		
-		/*
-		
-		// FILL DESCRIPTION TEXT FIELD FOR SELECTED ITEM
-		if( userStoryItemChoiceBox.getValue().equals("-- Select an Item --") || userStoryItemChoiceBox.getValue().equals("")) {
-			System.out.println("");
-		} else {
-			// SET THE SELECTED ITEM TO THE ITEM USER CLICKED
-			setSelectedItem(userStoryItemChoiceBox.getValue());
-					
-			// SEARCH STORIES AND LOOK THROUGH THE USERSTORYITEMS IN EACH STORY - IF THE SELECTED ITEM IN ITEM CHOICE BOX EQUALS ANY EXISTING ITEM, DISPLAY THE DESCRIPTION FOR THAT ITEM IN DESC TEXTFIELD
-			for(int i = 0; i < stories.size(); i++) {
-						
-				for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
-					if (stories.get(i).userStoryItems.get(j).getStoryTitle().equals(getSelectedItem()) ) {
-						userStoryItemDescription.setText(stories.get(i).userStoryItems.get(j).getStoryDescription());
-						break;
-					}
-				}
-				
-			}
-					
-		}
-		
-		*/	
+ 	// IF USER STORY CHOICEBOX IS CLICKED
+ 	private void populateStoryChoiceBox(ActionEvent event) {
+ 		
+ 		// IF USER STORY HAS BEEN PICKED - MAKE IT SO USER STORY ITEM CHOICEBOX NOW ASKS FOR AN ITEM
+ 		if ( !userStoryChoiceBox.getValue().equals("-- Select a Story --") ) {
+ 			userStoryItemChoiceBox.setValue("-- Select an Item --");
+ 			userStoryItemDescription.setText("");
+ 					
+ 		} // IF USER STORY HAS NOT BEEN PICKED - USER STORY ITEM CHOICEBOX DOES NOT ASK FOR ITEM
+ 		else {
+ 			userStoryItemDescription.setText("");
+ 		}
+ 		
+ 	}
+ 		
+ 	// IF USER STORY ITEM CHOICEBOX IS CLICKED
+ 	private void populateStoryItemChoiceBox(ActionEvent event) {
+ 		
+ 		// CAPTURE THE ITEM PRESENT IN USER STORY ITEM CHOICE BOX
+ 		String itemBoxValue = userStoryItemChoiceBox.getValue();
+ 		
+ 		// CHECK IF THERE IS A VALUE IN THE USER STORY ITEM CHOICEBOX
+ 		if( itemBoxValue != null ) {
 
-		
-		
-		
-		
-		
-	
-		// UNDER THIS WAS ALREADY COMMENTED OUT
-		
-		
-		/*
-		String storyTitle = userStoryChoiceBox.getValue();
-		
-		for(int i = 0; i < stories.size(); i++ ) {
-					
-					if( storyTitle == stories.get(i).getTitle() ){
-						
-						userStoryItemChoiceBox.setValue("-- Select an Item --");
-						
-						for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
-							
-							//userStoryItemChoiceBox.getItems().add(stories.get(i).userStoryItems.get(j).getStoryTitle());
-							itemChoices.add(stories.get(i).userStoryItems.get(j).getStoryTitle());
-							
-						}
-												
-						userStoryDataListView.getItems().add("Story: " + storyTitle);
-						
-					} else {
-						System.out.println("Story does not exist.");
-					}
-		}
-		*/
-	}
-	/*
-	
-	
-	
-	// GETS DATA FOR USER STORY CHOICE BOX
-	private void getData(ActionEvent event) {
-		
-		String selectedStory = userStoryChoiceBox.getValue();		
-		
-		// IF STMT'S POPULATE ITEM CHOICE BOX AND ADD STORY TO LIST VIEW
-		if (selectedStory == "User Story 1") {
-			userStoryItemChoiceBox.setValue("-- Select an Item --");
-			userStoryItemChoiceBox.getItems().addAll(testItems1);
-			userStoryDataListView.getItems().add("Story: " + selectedStory);
-		}
-		if (selectedStory == "User Story 2") {
-			userStoryItemChoiceBox.setValue("-- Select an Item --");
-			userStoryItemChoiceBox.getItems().addAll(testItems2);
-			userStoryDataListView.getItems().add("Story: " + selectedStory);
-		}
-		if (selectedStory == "User Story 3") {
-			userStoryItemChoiceBox.setValue("-- Select an Item --");
-			userStoryItemChoiceBox.getItems().addAll(testItems3);
-			userStoryDataListView.getItems().add("Story: " + selectedStory);
-		}
-		
-		
-		for(int i = 0; i < stories.size(); i++ ) {
-			
-			if( selectedStory == stories.get(i).getTitle() ){
-				userStoryItemChoiceBox.setValue("-- Select an Item --");
-				
-				for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
-					userStoryItemChoiceBox.getItems().add(stories.get(i).userStoryItems.get(j).getStoryTitle());
-				}
-				
-				//userStoryItemChoiceBox.getItems().addAll();
-				
-				userStoryDataListView.getItems().add("Story: " + selectedStory);
-			} else {
-				System.out.println("Story does not exist.");
-			}
-		}
-		
-		
-	}   */
-	
-	
-	
+ 		  if( userStoryItemChoiceBox.getValue().equals("-- Select an Item --") ) {
+ 			// SEARCH THROUGH STORIES
+ 			for(int i = 0; i < stories.size(); i++) {
+ 							
+ 			// IF ANYTHING IN STORIES EQUALS WHATS WAS SELECTED IN STORY CHOICEBOX
+ 				if( stories.get(i).getTitle().equals(getStoryBoxValue()) ) {
+ 									
+ 					int storyID = stories.get(i).getID();					
+ 									
+ 					System.out.println("\n\nList " + (storyID + 1) + "'s List Contents: ");
+ 					for(int j = 0; j < itemListList.get(storyID).size(); j++) {
+ 						System.out.print(itemListList.get(storyID).get(j) + " ");
+ 					}
+ 					
+ 					userStoryItemChoiceBox.getItems().setAll( itemListList.get(storyID) );
+ 										
+ 					// BREAK FROM WHOLE FOR LOOP IF ALL ITEMS FROM THE STORY WERE ADDED TO THE ARRAYLIST obsItemArrList
+ 					break;
+ 									
+ 				}
+ 							
+ 			}	
+ 			
+ 		  } else {			
+ 			System.out.println("No story is selected.");
+ 		  }
+
+ 		}
+ 		
+ 		// FILL DESCRIPTION TEXT FIELD FOR SELECTED ITEM
+ 		if( itemBoxValue == null ) {
+ 			System.out.println("");
+ 		} else {
+ 		
+ 			// SET THE SELECTED ITEM TO THE ITEM USER CLICKED
+ 			setSelectedItem(userStoryItemChoiceBox.getValue());
+ 					
+ 			// SEARCH STORIES AND LOOK THROUGH THE USERSTORYITEMS IN EACH STORY - IF THE SELECTED ITEM IN ITEM CHOICE BOX EQUALS ANY EXISTING ITEM, DISPLAY THE DESCRIPTION FOR THAT ITEM IN DESC TEXTFIELD
+ 			for(int i = 0; i < stories.size(); i++) {
+ 						
+ 				for(int j = 0; j < stories.get(i).userStoryItems.size(); j++) {
+ 					
+ 					if (stories.get(i).userStoryItems.get(j).getStoryTitle().equals(getSelectedItem()) ) {
+ 						userStoryItemDescription.setText(stories.get(i).userStoryItems.get(j).getStoryDescription());
+ 						break;
+ 					}
+ 					
+ 				}
+ 	
+ 			}
+ 					
+ 		}
+ 		 		
+ 	}
+
+// END OF SCENECONTROLLER
 }
