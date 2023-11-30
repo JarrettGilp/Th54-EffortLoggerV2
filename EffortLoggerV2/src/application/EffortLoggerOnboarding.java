@@ -65,6 +65,7 @@ public class EffortLoggerOnboarding extends Application {
         Button createTeamButton = new Button("Create a Team");
         createTeamButton.setOnAction(e -> {
             // Logic for creating a team
+        	//goToTeamJoiningScreen();
             stage.setScene(teamJoiningScene);
         });
         // layout of the button 
