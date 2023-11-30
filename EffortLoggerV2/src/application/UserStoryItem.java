@@ -1,3 +1,5 @@
+// Made by: Jarrett Gilpatric
+
 package application;
 
 public class UserStoryItem extends UserStory{
