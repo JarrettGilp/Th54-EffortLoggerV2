@@ -70,7 +70,7 @@ public class Main extends Application {
         Button createTeamButton = new Button("Create a Team");
         createTeamButton.setOnAction(e -> {
             // Logic for creating a team
-            stage.setScene(teamJoiningScene);
+        	goToTeamJoiningScreen();
         });
         // layout of the button 
         onBoardingLayout.getChildren().addAll(joinTeamButton, createTeamButton);
