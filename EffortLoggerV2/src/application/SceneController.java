@@ -134,6 +134,25 @@ public class SceneController implements Initializable{
 		private static ArrayList<UserStory> stories = new ArrayList<UserStory>();
 		private static String buffer[] = new String[] {"0", "0"};
 		
+	// SWITCH TO PROFILE CUSTOMIZATION PAGE
+	public void switchProfileCust(ActionEvent event) throws IOException {
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileCustomization.fxml"));
+		root = loader.load();
+	    
+	    stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+	}
+	
+	// SWITCH TO FEEDBACK HUB
+	public void switchFeedbackHub(ActionEvent event) throws IOException {
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		feedback feedback = new feedback();
+		feedback.start(stage);
+	}
+	
 	// WHEN LOGIN BUTTON IS CLICKED - CHECK IF USERNAME AND PASSWORD COMBO EXISTS
 	public void authentication(ActionEvent event) throws IOException {
 		
