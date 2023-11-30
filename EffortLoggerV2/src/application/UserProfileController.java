@@ -1,8 +1,11 @@
+// Made by: Jonathan De La O
+
 package application;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -47,8 +50,11 @@ public class UserProfileController {
 
             // Create a new stage for the Role Management window
             Stage stage = new Stage();
+            stage.getIcons().add(new Image("EL.png"));
             stage.setScene(new Scene(root));
             stage.setTitle("Role Management");
+			stage.setX(550);
+			stage.setY(160);
 
             // Show the Role Management window
             stage.show();

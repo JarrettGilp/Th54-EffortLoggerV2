@@ -1,4 +1,5 @@
-//package asuHelloWorldJavaFX;
+// Made by: Mohammed Al Sharyan
+
 package application;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class feedback extends Application {
 
     @Override
     public void start(Stage stageone) {
-        stageone.setTitle("Feedback Hub Prototype");
+        stageone.setTitle("EffortLogger");
 
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(20, 20, 20, 20));

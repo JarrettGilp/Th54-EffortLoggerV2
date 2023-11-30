@@ -18,7 +18,7 @@
          </font>
       </Button>
       <Button fx:id="userStoriesButton" layoutX="193.0" layoutY="121.0" mnemonicParsing="false" onAction="#switchToUserStoriesPage" prefHeight="42.0" prefWidth="213.0" text="User Stories" />
-      <Button fx:id="planningPokerButton" layoutX="192.0" layoutY="179.0" mnemonicParsing="false" onAction="#switchToPlanningPokerPage" prefHeight="42.0" prefWidth="214.0" text="Planning Poker" />
+      <Button fx:id="planningPokerButton" layoutX="192.0" layoutY="182.0" mnemonicParsing="false" onAction="#switchToPlanningPokerPage" prefHeight="42.0" prefWidth="214.0" text="Planning Poker" />
       <Button layoutX="31.0" layoutY="76.0" mnemonicParsing="false" onAction="#switchProfileCust" text="Profile Customization" />
       <Button layoutX="192.0" layoutY="241.0" mnemonicParsing="false" onAction="#switchFeedbackHub" prefHeight="42.0" prefWidth="214.0" text="FeedBack Hub" />
    </children>

@@ -1,24 +1,26 @@
 // Made by: Ritesh Puttanmadam
 
 package application;
+
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
 
-public class Main extends Application {
+// we run the program from EffortLoggerOnboarding class. This class runs the Onboarding tutorial where the user
+// can run the program and interact with it. 
 
-	
-	Stage stage;
+public class EffortLoggerOnboarding extends Application {
+
+    Stage stage;
     Scene welcomeScene, onBoardingScene, teamJoiningScene, planningPokerScene;
 
     public static void main(String[] args) {
@@ -29,12 +31,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
 
-        stage.getIcons().add(new Image("EL.png"));
-        stage.setTitle("EffortLogger");
-        Label effortLoggerTutorial = new Label("EffortLogger Tutorial");
-        effortLoggerTutorial.setTranslateY(-60);
-        effortLoggerTutorial.setFont(Font.font(30));
-        
         // Welcome Screen button name
         Button welcomeButton = new Button("Welcome to Effortlogger V2 Onboarding Tutorial");
         welcomeButton.setOnAction(e -> goToOnboardingTutorial());
@@ -52,9 +48,8 @@ public class Main extends Application {
         StackPane welcomeLayout = new StackPane();
         welcomeLayout.getChildren().add(welcomeButton);
         welcomeLayout.getChildren().add(goToLogin);
-        welcomeLayout.getChildren().add(effortLoggerTutorial);
         welcomeScene = new Scene(welcomeLayout, 400, 300);
-        
+
         stage.setScene(welcomeScene);
         stage.show();
     }
@@ -183,5 +178,4 @@ public class Main extends Application {
     private void createTeam() {
         System.out.println("Team created!");
     }
-	
 }

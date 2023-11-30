@@ -107,18 +107,15 @@ public class SceneController implements Initializable{
 	private static ArrayList<String> itemChoices = new ArrayList<String>();
 	public static ArrayList<String> obsItemArrList = new ArrayList<String>();
 	public static ArrayList<ObservableList<String>> itemListList = new ArrayList<ObservableList<String>>();
-	
-	// might not need
+	// OBSERVABLE LISTS
 	@FXML ObservableList<String> userStoryChoices = FXCollections.observableArrayList();
-	
 	@FXML ObservableList<String> storyList = FXCollections.observableArrayList(choices);
 	@FXML ObservableList<String> itemList = FXCollections.observableArrayList(itemChoices);
 	@FXML ObservableList<String> obsItemsList = FXCollections.observableArrayList(obsItemArrList);
-	
+	// MISC. VARIABLES
 	private UserStory tempStory;
 	private static String storyBoxValue;
 	private static int userStoryID = 0;
-	
 	// DATA STRUCTURES
 		private static ArrayList<String> userList = new ArrayList<String>(100) {{
 			add(testUsername);
@@ -133,21 +130,57 @@ public class SceneController implements Initializable{
 		}};
 		private static ArrayList<UserStory> stories = new ArrayList<UserStory>();
 		private static String buffer[] = new String[] {"0", "0"};
+	
+	// START ON LOGIN PAGE
+	public void initiateHomePage(Stage stage) {
+		// SET ROOT PAGE AND CREATE SCENE
+				try {
+					Parent root = FXMLLoader.load(getClass().getResource("EffortLoggerLogin.fxml"));
+					Scene homeScene = new Scene(root);
+								
+					// WINDOW TITLE
+					stage.setTitle("EffortLogger");
+								
+					// WINDOW SIZING
+					stage.setX(450);
+								
+					// DISPLAY SCENE
+					stage.setScene(homeScene);
+					stage.setResizable(false);
+					stage.show();
+					
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+	}
+	
+	// SWITCH TO TUTORIAL PAGE
+	public void switchToTutorial(ActionEvent event) {
+		// SWITCH TO RITESH'S TUTORIAL
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		
+		Main obj = new Main();
+		obj.start(stage);
+		stage.setX(550);
+	}
+	
 	// SWITCH TO PROFILE CUSTOMIZATION PAGE
 	public void switchProfileCust(ActionEvent event) throws IOException {
 		
+		// LOAD JONATHAN'S PROFILE CUSTOMIZATION PAGE
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("ProfileCustomization.fxml"));
 		root = loader.load();
 	    
 	    stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
 		stage.setScene(scene);
+		stage.setX(550);
 		stage.show();
 	}
 	
 	// SWITCH TO FEEDBACK HUB
 	public void switchFeedbackHub(ActionEvent event) throws IOException {
+		// SWITCH TO MOHAMMED'S FEEDBACK HUB
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		feedback feedback = new feedback();
 		feedback.start(stage);
@@ -155,7 +188,7 @@ public class SceneController implements Initializable{
 	
 	// WHEN LOGIN BUTTON IS CLICKED - CHECK IF USERNAME AND PASSWORD COMBO EXISTS
 	public void authentication(ActionEvent event) throws IOException {
-		
+		// CAPTURE USERS INPUTS FOR USERNAME AND PASSWORD
 		String username = usernameLoginTextField.getText();
 		String password = passwordLoginTextField.getText();
 		
@@ -167,6 +200,7 @@ public class SceneController implements Initializable{
 			System.out.println(userList.get(0));
 			System.out.println(userList.get(1));
 			
+			// LOG USER IN IF AUTHENTICATION PASSES
 			if ( (username.equals(userList.get(i)) && password.equals(userList.get(i + 1))) )
 			{
 				System.out.println("User info was seen.");
@@ -176,6 +210,7 @@ public class SceneController implements Initializable{
 			}
 		}
 		
+		// CHECK IF USER THAT IS LOGGING IN IS A SUPERVISOR AND LOG THEM IN ACCORDINGLY
 		for( int j = 0; j <= supervisorList.size() - 2; j+=2) {
 			
 			if ( (username.equals(supervisorList.get(j)) && password.equals(supervisorList.get(j + 1))) )
@@ -186,7 +221,7 @@ public class SceneController implements Initializable{
 				supervisorLogin(event);
 			}
 		}
-		
+		// IF NO LOGIN CREDENTIALS EXIST
 		if ( loggedIn == false ){
 			System.out.println("\nInvalid username or password.");
 		}
@@ -196,9 +231,8 @@ public class SceneController implements Initializable{
 	// GOES TO LOGIN PAGE (HOME PAGE)
 	public void switchToHomePage(ActionEvent event) throws IOException {
 		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/EffortLoggerLogin.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("EffortLoggerLogin.fxml"));
 		root = loader.load();
-		//Parent root = FXMLLoader.load(getClass().getResource("/EffortLoggerLogin.fxml"));
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -209,21 +243,16 @@ public class SceneController implements Initializable{
 	
 	// GOES TO USER PAGE
 	public void switchToUserPage(ActionEvent event) throws IOException {
-			
-		//Parent root = FXMLLoader.load(getClass().getResource("/UserPage.fxml"));
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		// SWITCH TO USERPAGE	
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("UserPage.fxml"));
 		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
 		stage.setScene(scene);
+		stage.setX(450);
 		stage.show();
-		/*
-		String cappedUserName = getUsername();
 		
-		SceneController sceneController = loader.getController();
-		sceneController.displayName(cappedUserName);
-		*/
 		
 		if ( superLoggedIn == true ) {
 			String cappedUserName = getSuperUsername();
@@ -241,8 +270,7 @@ public class SceneController implements Initializable{
 	// GOES TO SUPERVISOR PAGE
 	public void switchToSupervisorPage(ActionEvent event) throws IOException {
 		
-		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorPage.fxml"));	
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("UserPage.fxml"));
 		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -255,7 +283,7 @@ public class SceneController implements Initializable{
 	// GOES TO REGISTRATION PAGE
 	public void switchToRegisterPage(ActionEvent event) throws IOException {
 					
-			Parent root = FXMLLoader.load(getClass().getResource("/RegisterPage.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("RegisterPage.fxml"));
 			
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
@@ -267,8 +295,7 @@ public class SceneController implements Initializable{
 	// GOES TO SUPERVISOR CODE PROMPT PAGE
 	public void switchToSupervisorCodePage(ActionEvent event) throws IOException {
 		
-		//Parent root = FXMLLoader.load(getClass().getResource("/SupervisorCodePage.fxml"));
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorCodePage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("SupervisorCodePage.fxml"));
 		root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -282,7 +309,7 @@ public class SceneController implements Initializable{
 	public void switchToUserStoriesPage(ActionEvent event) throws IOException {
 		
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/UserStoriesPage.fxml"));
+		loader.setLocation(getClass().getResource("UserStoriesPage.fxml"));
 		Parent root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -296,7 +323,7 @@ public class SceneController implements Initializable{
 	public void switchToPlanningPokerPage(ActionEvent event) throws IOException {
 		
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/PlanningPokerPage.fxml"));
+		loader.setLocation(getClass().getResource("PlanningPokerPage.fxml"));
 		Parent root = loader.load();
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -328,7 +355,7 @@ public class SceneController implements Initializable{
 			
 			// LOAD CREATE USER STORY ITEM PAGE
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/CreateUserStoryItemPage.fxml"));
+			loader.setLocation(getClass().getResource("CreateUserStoryItemPage.fxml"));
 			Parent root = loader.load();
 			
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -340,17 +367,12 @@ public class SceneController implements Initializable{
 	
 	// DISPLAYS NAME ON USER PAGE AFTER USER LOGS IN
 	public void displayName(String username) {
-		
 		usernameLabel.setText("Welcome User: " + username);
-		
 	}
 	
 	// DISPLAYS NAME ON SUPERVISOR PAGE AFTER SUPERVISOR LOGS IN
 	public void displaySupervisorName(String username) {
-		
-		usernameLabel.setText("Welcome Supervisor: " + username);
-		//supervisorLabel.setText("Welcome Supervisor: " + username);
-		
+		usernameLabel.setText("Welcome Supervisor: " + username);		
 	}
 	
 	// PRINTS ELEMENTS OF A SPECIFIED LIST
@@ -429,9 +451,10 @@ public class SceneController implements Initializable{
 		System.out.println("\nYou have successfully registered your login information!\n");
 		
 		// LOGS IN USER AFTER REGISTRATION
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("UserPage.fxml"));
 		root = loader.load();
 		
+		// SET AND USE CAPTURED USERNAME FOR USER PAGE
 		setUsername(username);
 		String cappedUserName = getUsername();
 		
@@ -460,7 +483,7 @@ public class SceneController implements Initializable{
 				
 		setSuperUsername(username);
 				
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorCodePage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("SupervisorCodePage.fxml"));
 		root = loader.load();
 				
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -477,7 +500,7 @@ public class SceneController implements Initializable{
 		// CAPTURES USERNAME ENTRY FIELD FOR DISPLAYING IN USER PAGE
 		String username = usernameLoginTextField.getText();
 		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("UserPage.fxml"));
 		root = loader.load();
 		
 		setUsername(username);
@@ -508,7 +531,7 @@ public class SceneController implements Initializable{
 			//FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupervisorPage.fxml"));
 			superLoggedIn = true;
 			
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("UserPage.fxml"));
 			root = loader.load();
 			System.out.println("\nYou have successfully logged in as supervisor!");	
 			
@@ -546,7 +569,7 @@ public class SceneController implements Initializable{
 					
 					// LOGGED IN TO SUPERVISOR PAGE
 					superLoggedIn = true;
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserPage.fxml"));
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("UserPage.fxml"));
 					root = loader.load();
 					System.out.println("\nYou have successfully logged in as supervisor!");
 					
@@ -599,10 +622,9 @@ public class SceneController implements Initializable{
 		String title = createUserStoryTitleField.getText();
 		String description = createUserStoryDescriptionTestArea.getText();
 		ArrayList<UserStoryItem> userStoryItem = new ArrayList<UserStoryItem>();
-		//ObservableList<String> obsItemList = FXCollections.observableArrayList(obsItemArrList);
 		ArrayList<String> arrList = new ArrayList<String>();
 		ObservableList<String> obsItemList = FXCollections.observableArrayList(arrList);
-
+		// CAPTURE ID FOR NEW USER STORY
 		int id = getUserID();
 		setUserID(id + 1);
 		
@@ -626,9 +648,7 @@ public class SceneController implements Initializable{
 				
 				arrList.add(newStory.getTitle());
 				obsItemList.addAll(arrList);
-				itemListList.add(obsItemList);
-				
-				
+				itemListList.add(obsItemList);	
 				
 				// ADD STORY ITEMS INTO USERSTORYCHOICES
 				for(int j = 0; j < stories.size(); j++) {
@@ -651,13 +671,11 @@ public class SceneController implements Initializable{
 			recentUserStoriesList.setItems(userStoryChoices);
 			
 			// ADD NEW STORY TO PLANNING POKER USER STORY CHOICEBOX
-			choices.add(newStory.getTitle());
-			
+			choices.add(newStory.getTitle());		
 			
 			arrList.add(newStory.getTitle());
 			obsItemList.addAll(arrList);
-			itemListList.add(obsItemList);
-			
+			itemListList.add(obsItemList);		
 
 			printStories(stories);
 		}
@@ -702,7 +720,8 @@ public class SceneController implements Initializable{
 	
 	// CREATES A NEW USER STORY ITEM
 	public void createUserStoryItem(ActionEvent event) throws IOException {
-				
+		
+		// CAPTURE USER INPUT FOR NEW ITEM
 		String itemTitle = newUserStoryItemTitle.getText();
 		String itemDesc = newUserStoryItemDescription.getText();
 		String capturedStory = getStoryBoxValue();	
@@ -710,6 +729,7 @@ public class SceneController implements Initializable{
 		
 		UserStoryItem newItem = new UserStoryItem(itemTitle, itemDesc, 0);
 
+		// LOOK THROUGH STORIES AND ADD ITEM TO THE STORY "CAPTURED STORY"
 		for(int i = 0; i < stories.size(); i++ )  {
 			
 			for(int j = 0; j < stories.get(i).userStoryItems.size() + 1; j++) {
@@ -720,7 +740,7 @@ public class SceneController implements Initializable{
 					itemChoices.add(newItem.getStoryTitle());
 					obsItemArrList.add(newItem.getStoryTitle());
 					
-					
+					// ADD TO THE OBSERVABLE LIST AT THE CORRECT ID (CORRECT STORY)
 					int storyID = stories.get(i).getID();
 					itemListList.get(storyID).add(newItem.getStoryTitle());
 					
@@ -734,12 +754,11 @@ public class SceneController implements Initializable{
 				
 			}
 		}
-		//TEST
+		//TESTING OBSITEMARRLIST CONTENT
 		System.out.println("\nItems are: ");
 		for(int h = 0; h < obsItemArrList.size(); h++) {
 			System.out.print(obsItemArrList.get(h) + " ");
 		}
-	
 		
 		switchToPlanningPokerPage(event);
 	}
@@ -828,7 +847,7 @@ public class SceneController implements Initializable{
  			if( selectedItem == null) {
  				System.out.println("There is no item selected.");
  			}
- 			
+ 			// CHECK IF 0 SCORE IS GIVEN
  			else if( itemScoreTextField.getText().equals("0") ) {
  				
  				if( selectedItem != null ) {
@@ -843,7 +862,7 @@ public class SceneController implements Initializable{
  					System.out.println("\nThere is no item selected.");
  					itemScoreTextField.setText("");
  				}
- 			}
+ 			} // CHECK IF SCORE 1 WAS GIVEN AND CALCULATE AVERAGE
 	 		else if (itemScoreTextField.getText().equals("1"))
 	 		{
 	 			score = 1;
@@ -856,7 +875,7 @@ public class SceneController implements Initializable{
 				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
 		 		int average = getTotalScore() / getScoreCount();
 				userStoryDataListView.getItems().add("Points Average: " + average);
-	 		}
+	 		} // CHECK IF SCORE 2 WAS GIVEN AND CALCULATE AVERAGE
 	 		else if (itemScoreTextField.getText().equals("2"))
 	 		{
 	 			score = 2;
@@ -869,7 +888,7 @@ public class SceneController implements Initializable{
 				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
 		 		int average = getTotalScore() / getScoreCount();
 				userStoryDataListView.getItems().add("Points Average: " + average);
-	 		}
+	 		} // CHECK IF SCORE 3 WAS GIVEN AND CALCULATE AVERAGE
 	 		else if (itemScoreTextField.getText().equals("3"))
 	 		{
 	 			score = 3;
@@ -882,7 +901,7 @@ public class SceneController implements Initializable{
 				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
 		 		int average = getTotalScore() / getScoreCount();
 				userStoryDataListView.getItems().add("Points Average: " + average);
-	 		}
+	 		} // CHECK IF SCORE 4 WAS GIVEN AND CALCULATE AVERAGE
 	 		else if (itemScoreTextField.getText().equals("4"))
 	 		{
 	 			score = 4;
@@ -895,7 +914,7 @@ public class SceneController implements Initializable{
 				// CALCULATES AVERAGE OF STORY POINTS AND DISPLAYS IN LISTVIEW
 		 		int average = getTotalScore() / getScoreCount();
 				userStoryDataListView.getItems().add("Points Average: " + average);
-	 		}
+	 		} // IF NO SCORE GIVEN
 	 		else {
 	 			System.out.println("\nNo score provided.");
 	 		}
@@ -906,7 +925,8 @@ public class SceneController implements Initializable{
     		
 	// QUITS THE PROGRAM
  	public void exit(ActionEvent event) {
-		stage = (Stage) userPagePane.getScene().getWindow();
+ 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+ 		
 		System.out.println("\nYou have successfully exited the program!");
 		stage.close();
 	}
