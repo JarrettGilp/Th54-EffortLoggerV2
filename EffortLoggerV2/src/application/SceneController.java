@@ -916,7 +916,7 @@ public class SceneController implements Initializable{
 				userStoryDataListView.getItems().add("Points Average: " + average);
 	 		} // IF NO SCORE GIVEN
 	 		else {
-	 			System.out.println("\nNo score provided.");
+	 			System.out.println("\nInvalid score provided.");
 	 		}
 
  		}
