@@ -842,7 +842,7 @@ public class SceneController implements Initializable{
  			// IF STMT'S CHECK WHICH POINT WAS CHOSEN AND DESIGNATES THAT TO SELECTED ITEM
  			String selectedItem = getSelectedItem();
  			
- 			if( selectedItem == null) {
+ 			if( selectedItem == null || selectedItem.equals("-- Select an Item --") ) {
  				System.out.println("There is no item selected.");
  			}
  			// CHECK IF 0 SCORE IS GIVEN
